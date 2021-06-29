@@ -11,7 +11,7 @@ def createindex(path=[r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs", r
             for file in files:
                 print(file)
                 if file.endswith(".lnk") and not file.startswith("desktop"):
-                    rawFileList[file] = os.path.join(root, file)
+                    rawFileList[file.lower()] = os.path.join(root, file)
                     
     filelist = OrderedDict(sorted(rawFileList.items(), key=lambda t: t[0]))
     
