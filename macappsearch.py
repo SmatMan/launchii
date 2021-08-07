@@ -27,3 +27,11 @@ def saveIndex(output="index.json"):
     index = createIndex()
     with open(output, "w") as f:
         f.write(json.dumps(index, indent=4))
+
+def searchIndex(index, searchterm):
+    results = {}
+    for i in index: # iterate over index
+        if searchterm in index[i].lower(): # if search term is in index
+            # append i to results as key and index[i] as value
+            results[i] = index[i]
+    return results
