@@ -5,3 +5,6 @@
 - Add an easy plugin API to allow developers to create plugins for launchii
 - Efficient indexing, but easily modifiable by the user
 - Completely open source
+
+## Contributions?
+Yes please! Contributions/PRs are highly appreciated!
