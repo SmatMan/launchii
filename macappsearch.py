@@ -39,3 +39,8 @@ def searchIndex(index, searchterm):
 def getPath(index, term):
     path = index[term]
     return path
+
+def getIcon(path):
+    for i in glob(f"{path}/Contents/Resources/*.icns"):
+        icon = i
+    return icon
