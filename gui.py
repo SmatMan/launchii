@@ -69,6 +69,7 @@ class launchiiwidget(QtWidgets.QWidget):
         self.textbox.setFont(font)
 
         self.listwidget = QtWidgets.QListWidget(self)
+        self.listwidget.setItemAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.listwidget)
 
     def onPressed(self):
@@ -98,7 +99,6 @@ class Worker(QtCore.QThread):
         self.wait()
 
     def run(self):
-        
         self.previous = ""
         while True:
             try:
@@ -106,12 +106,16 @@ class Worker(QtCore.QThread):
                 if term != "" and term != self.previous:
                     self.widget.listwidget.clear()
                     for i in appsearch.searchIndex(self.index, term):
-                        self.widget.listwidget.addItem(i)
+                        item = QtWidgets.QListWidgetItem(i)
+                        item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+                        #item.setIcon(QtGui.QIcon(appsearch.getIcon(i)))
+                        #print(appsearch.getIcon(i))
+                        self.widget.listwidget.addItem(item)
                 self.previous = term
             except:
                 pass
 
-            time.sleep(1)
+            time.sleep(0.1)
                 
 
 if __name__ == "__main__":
