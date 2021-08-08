@@ -35,3 +35,7 @@ def searchIndex(index, searchterm):
             # append i to results as key and index[i] as value
             results[i] = index[i]
     return results
+
+def getPath(index, term):
+    path = index[term]
+    return path
