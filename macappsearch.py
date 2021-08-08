@@ -7,7 +7,7 @@ from glob import glob
 path=["/Applications", "/System/Applications", f"/Users/{getpass.getuser()}/Applications"]
 rawFileList = {}
 
-def createIndex(path=path):
+def createIndex(path=path) -> OrderedDict:
     # For every filepath in path, find all the folders (no subdirectories) ending in .app and add them to the dict rawFileList
     for i in path:
         files = glob(f"{i}/*/")
@@ -23,12 +23,13 @@ def createIndex(path=path):
     return index
 
 
-def saveIndex(output="index.json"):
+def saveIndex(output="index.json") -> None:
     index = createIndex()
     with open(output, "w") as f:
         f.write(json.dumps(index, indent=4))
+    return True
 
-def searchIndex(index, searchterm):
+def searchIndex(index, searchterm) -> dict:
     results = {}
     for i in index: # iterate over index
         if searchterm in index[i].lower(): # if search term is in index
@@ -36,11 +37,11 @@ def searchIndex(index, searchterm):
             results[i] = index[i]
     return results
 
-def getPath(index, term):
+def getPath(index, term) -> str:
     path = index[term]
     return path
 
-def getIcon(path):
+def getIcon(path) -> str:
     for i in glob(f"{path}/Contents/Resources/*.icns"):
         icon = i
     return icon
