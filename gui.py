@@ -2,7 +2,6 @@ import sys
 import random
 from PyQt6 import QtCore, QtWidgets, QtGui
 import time
-import macappsearch as appsearch
 import json
 import os
 
@@ -12,6 +11,7 @@ class KeyHelper(QtCore.QObject):
     def __init__(self, window, widget):
         super().__init__(window)
         self._window = window
+        self.widget = widget
 
         self.window.installEventFilter(self)
 
@@ -21,7 +21,7 @@ class KeyHelper(QtCore.QObject):
 
     def eventFilter(self, obj, event):
         if event.type() == QtCore.QEvent.Type.KeyPress:
-            if widget.listwidget.hasFocus():
+            if self.widget.listwidget.hasFocus():
                 if event.key() in (
                     QtCore.Qt.Key.Key_Return,
                     QtCore.Qt.Key.Key_Enter,
@@ -30,15 +30,15 @@ class KeyHelper(QtCore.QObject):
                     self.pressed.emit()
                     print("yes")
                     return True
-            elif widget.textbox.hasFocus():
+            elif self.widget.textbox.hasFocus():
                 if event.key() in (
                     QtCore.Qt.Key.Key_Down,
                     QtCore.Qt.Key.Key_Right,
                 ):
-                    widget.listwidget.setFocus()
-                    index = widget.listwidget.model().index(0, 0)
+                    self.widget.listwidget.setFocus()
+                    index = self.widget.listwidget.model().index(0, 0)
                     if index.isValid():
-                        widget.listwidget.setCurrentIndex(index)
+                        self.widget.listwidget.setCurrentIndex(index)
         if event.type() == QtCore.QEvent.Type.KeyPress:
             if event.key() == QtCore.Qt.Key.Key_Escape:
                 self.window.close()
@@ -49,8 +49,9 @@ class KeyHelper(QtCore.QObject):
 
 
 class launchiiwidget(QtWidgets.QWidget):
-    def __init__(self, index):
+    def __init__(self, index, searcher):
         self.index = index
+        self.searcher = searcher
         super().__init__()
         layout = QtWidgets.QVBoxLayout(self)
 
@@ -81,7 +82,7 @@ class launchiiwidget(QtWidgets.QWidget):
         item = self.listwidget.currentItem()
         if item is not None:
             print(item.text())
-            apppath = appsearch.getPath(self.index, item.text())
+            apppath = self.searcher.getPath(self.index, item.text())
             if apppath is not None:
                 print(apppath)
                 os.system("open " + apppath)
@@ -90,10 +91,11 @@ class launchiiwidget(QtWidgets.QWidget):
 
 
 class Worker(QtCore.QThread):
-    def __init__(self, widget, index):
+    def __init__(self, widget, index, searcher):
         QtCore.QThread.__init__(self)
         self.widget = widget
         self.index = index
+        self.searcher = searcher
 
     def __del__(self):
         self.wait()
@@ -105,29 +107,30 @@ class Worker(QtCore.QThread):
                 term = self.widget.textbox.text()
                 if term != "" and term != self.previous:
                     self.widget.listwidget.clear()
-                    for i in appsearch.searchIndex(self.index, term):
+                    for i in self.searcher.searchIndex(self.index, term):
                         item = QtWidgets.QListWidgetItem(i)
                         item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-                        #item.setIcon(QtGui.QIcon(appsearch.getIcon(i)))
-                        #print(appsearch.getIcon(i))
+                        #item.setIcon(QtGui.QIcon(self.searcher.getIcon(i)))
+                        #print(self.searcher.getIcon(i))
                         self.widget.listwidget.addItem(item)
                 self.previous = term
             except:
                 pass
             time.sleep(0.1) 
-if __name__ == "__main__":
+
+def main(searcher=None):
     app = QtWidgets.QApplication([])
 
     with open("index.json", "r") as f: # load index
         index = json.load(f)
 
-    widget = launchiiwidget(index)
+    widget = launchiiwidget(index, searcher)
     widget.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
     widget.resize(600, 200)
     widget.show()
 
 
-    thread = Worker(widget, index)
+    thread = Worker(widget, index, searcher)
     thread.start()
 
     key_helper = KeyHelper(widget.windowHandle(), widget)
@@ -135,3 +138,6 @@ if __name__ == "__main__":
     
 
     sys.exit(app.exec())
+
+if __name__ == "__main__":
+    main()

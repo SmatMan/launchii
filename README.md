@@ -20,8 +20,14 @@ $ cd launchii
 $ python -m venv venv
 $ # activate your environment, different per platform
 $ pip install -r requirements.txt
-$ python launchii.py # for cli
-$ python gui.py # for gui
+$ python launchii.py --cli # for cli
+$ python launchii.py --gui # for gui
+```
+
+To run unit tests
+```console
+$ pip install -r test_requirements.txt
+$ pytest
 ```
 
 ## Contributions?
