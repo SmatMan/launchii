@@ -12,6 +12,7 @@ class KeyHelper(QtCore.QObject):
     def __init__(self, window, widget):
         super().__init__(window)
         self._window = window
+        self.widget = widget
 
         self.window.installEventFilter(self)
 
@@ -21,7 +22,7 @@ class KeyHelper(QtCore.QObject):
 
     def eventFilter(self, obj, event):
         if event.type() == QtCore.QEvent.Type.KeyPress:
-            if widget.listwidget.hasFocus():
+            if self.widget.listwidget.hasFocus():
                 if event.key() in (
                     QtCore.Qt.Key.Key_Return,
                     QtCore.Qt.Key.Key_Enter,
@@ -30,15 +31,15 @@ class KeyHelper(QtCore.QObject):
                     self.pressed.emit()
                     print("yes")
                     return True
-            elif widget.textbox.hasFocus():
+            elif self.widget.textbox.hasFocus():
                 if event.key() in (
                     QtCore.Qt.Key.Key_Down,
                     QtCore.Qt.Key.Key_Right,
                 ):
-                    widget.listwidget.setFocus()
-                    index = widget.listwidget.model().index(0, 0)
+                    self.widget.listwidget.setFocus()
+                    index = self.widget.listwidget.model().index(0, 0)
                     if index.isValid():
-                        widget.listwidget.setCurrentIndex(index)
+                        self.widget.listwidget.setCurrentIndex(index)
         if event.type() == QtCore.QEvent.Type.KeyPress:
             if event.key() == QtCore.Qt.Key.Key_Escape:
                 self.window.close()
@@ -115,7 +116,8 @@ class Worker(QtCore.QThread):
             except:
                 pass
             time.sleep(0.1) 
-if __name__ == "__main__":
+
+def main():
     app = QtWidgets.QApplication([])
 
     with open("index.json", "r") as f: # load index
@@ -135,3 +137,6 @@ if __name__ == "__main__":
     
 
     sys.exit(app.exec())
+
+if __name__ == "__main__":
+    main()
