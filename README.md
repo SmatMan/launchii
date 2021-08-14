@@ -10,5 +10,19 @@ launchii is (will be) versatile, include a simple & clean UI with theming suppor
 - Efficient indexing, but easily modifiable by the user
 - Completely open source
 
+## Using launchii
+
+Right now launchii is early in development and needs to be launched by checking out the project.
+
+```console
+$ git clone https://github.com/SmatMan/launchii
+$ cd launchii
+$ python -m venv venv
+$ # activate your environment, different per platform
+$ pip install -r requirements.txt
+$ python launchii.py # for cli
+$ python gui.py # for gui
+```
+
 ## Contributions?
 Yes please! Contributions/PRs are highly appreciated!
