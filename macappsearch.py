@@ -3,6 +3,7 @@ from collections import OrderedDict
 import getpass
 import json
 from glob import glob
+from crosssearch import getPath, searchIndex
 
 path=["/Applications", "/System/Applications", f"/Users/{getpass.getuser()}/Applications"]
 rawFileList = {}
@@ -22,24 +23,11 @@ def createIndex(path=path) -> OrderedDict:
         index[key] = value
     return index
 
-
 def saveIndex(output="index.json") -> None:
     index = createIndex()
     with open(output, "w") as f:
         f.write(json.dumps(index, indent=4))
     return True
-
-def searchIndex(index, searchterm) -> dict:
-    results = {}
-    for i in index: # iterate over index
-        if searchterm in index[i].lower(): # if search term is in index
-            # append i to results as key and index[i] as value
-            results[i] = index[i]
-    return results
-
-def getPath(index, term) -> str:
-    path = index[term]
-    return path
 
 def getIcon(path) -> str:
     for i in glob(f"{path}/Contents/Resources/*.icns"):
