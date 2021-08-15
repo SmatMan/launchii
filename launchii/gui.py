@@ -5,6 +5,7 @@ import time
 import json
 import os
 
+
 class KeyHelper(QtCore.QObject):
     pressed = QtCore.pyqtSignal()
 
@@ -43,8 +44,7 @@ class KeyHelper(QtCore.QObject):
             if event.key() == QtCore.Qt.Key.Key_Escape:
                 self.window.close()
                 return True
-        
-                
+
         return super().eventFilter(obj, event)
 
 
@@ -56,13 +56,12 @@ class launchiiwidget(QtWidgets.QWidget):
         layout = QtWidgets.QVBoxLayout(self)
 
         self.textbox = QtWidgets.QLineEdit(self)
-        self.textbox.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter) 
+        self.textbox.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.textbox.setFixedSize(QtCore.QSize(600, 100))
 
         self.textbox.setPlaceholderText("Search...")
         self.textbox.returnPressed.connect(self.onPressed)
-        
-        
+
         layout.addWidget(self.textbox)
 
         font = self.textbox.font()
@@ -78,6 +77,7 @@ class launchiiwidget(QtWidgets.QWidget):
         index = self.listwidget.model().index(0, 0)
         if index.isValid():
             self.listwidget.setCurrentIndex(index)
+
     def enterpressed(self):
         item = self.listwidget.currentItem()
         if item is not None:
@@ -87,7 +87,6 @@ class launchiiwidget(QtWidgets.QWidget):
                 print(apppath)
                 os.system("open " + apppath)
                 self.window.close()
-
 
 
 class Worker(QtCore.QThread):
@@ -110,18 +109,19 @@ class Worker(QtCore.QThread):
                     for i in self.searcher.searchIndex(self.index, term):
                         item = QtWidgets.QListWidgetItem(i)
                         item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-                        #item.setIcon(QtGui.QIcon(self.searcher.getIcon(i)))
-                        #print(self.searcher.getIcon(i))
+                        # item.setIcon(QtGui.QIcon(self.searcher.getIcon(i)))
+                        # print(self.searcher.getIcon(i))
                         self.widget.listwidget.addItem(item)
                 self.previous = term
             except:
                 pass
-            time.sleep(0.1) 
+            time.sleep(0.1)
+
 
 def main(searcher=None):
     app = QtWidgets.QApplication([])
 
-    with open("index.json", "r") as f: # load index
+    with open("index.json", "r") as f:  # load index
         index = json.load(f)
 
     widget = launchiiwidget(index, searcher)
@@ -129,15 +129,14 @@ def main(searcher=None):
     widget.resize(600, 200)
     widget.show()
 
-
     thread = Worker(widget, index, searcher)
     thread.start()
 
     key_helper = KeyHelper(widget.windowHandle(), widget)
     key_helper.pressed.connect(widget.enterpressed)
-    
 
     sys.exit(app.exec())
+
 
 if __name__ == "__main__":
     main()

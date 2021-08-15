@@ -1,16 +1,21 @@
 from termcolor import colored
 
+
 def green(text):
-    return colored(text, 'green')
+    return colored(text, "green")
+
 
 def red(text):
-    return colored(text, 'red')
+    return colored(text, "red")
+
 
 def yellow(text):
-    return colored(text, 'yellow')
+    return colored(text, "yellow")
+
 
 def blue(text):
-    return colored(text, 'blue')
+    return colored(text, "blue")
+
 
 def cyan(text):
-    return colored(text, 'cyan')
+    return colored(text, "cyan")
