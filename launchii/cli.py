@@ -1,6 +1,6 @@
 import json
 import os
-from colours import *
+from launchii.colours import *
 
 def main(searcher=None):
     with open("index.json", "r") as f: # load index

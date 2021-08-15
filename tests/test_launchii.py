@@ -1,9 +1,10 @@
 import unittest.mock as mock
 import pytest
 
-import launchii
-import appsearch
-import macappsearch
+import launchii.appsearch as appsearch
+import launchii.macappsearch as macappsearch
+import launchii.launchii as launchii
+
 
 @pytest.fixture
 def cli():

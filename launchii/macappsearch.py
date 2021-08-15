@@ -3,7 +3,7 @@ from collections import OrderedDict
 import getpass
 import json
 from glob import glob
-from crosssearch import getPath, searchIndex
+from launchii.crosssearch import getPath, searchIndex
 
 path=["/Applications", "/System/Applications", f"/Users/{getpass.getuser()}/Applications"]
 rawFileList = {}

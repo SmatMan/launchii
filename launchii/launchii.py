@@ -7,14 +7,14 @@ Usage:
 import sys
 import platform
 
-import cli
-import gui
+import launchii.cli
+import launchii.gui
 
-import appsearch
-import macappsearch
+import launchii.appsearch
+import launchii.macappsearch
 
 def searcher(system):
-    return appsearch if system == "Windows" else macappsearch
+    return launchii.appsearch if system == "Windows" else launchii.macappsearch
 
 def main(cli, gui, print, args, searcher):
     if "--cli" in args:
@@ -24,6 +24,5 @@ def main(cli, gui, print, args, searcher):
     else:
         print(__doc__)
 
-
-if __name__ == "__main__":
-    main(cli, gui, print, sys.argv, searcher(platform.system()))
+def run():
+    main(launchii.cli, launchii.gui, print, sys.argv, searcher(platform.system()))

@@ -19,15 +19,15 @@ $ git clone https://github.com/SmatMan/launchii
 $ cd launchii
 $ python -m venv venv
 $ # activate your environment, different per platform
-$ pip install -r requirements.txt
-$ python launchii.py --cli # for cli
-$ python launchii.py --gui # for gui
+$ pip install poetry
+$ poetry install
+$ launchii --cli # for cli
+$ launchii --gui # for gui
 ```
 
 To run unit tests
 ```console
-$ pip install -r test_requirements.txt
-$ pytest
+$ poetry run pytest
 ```
 
 ## Contributions?

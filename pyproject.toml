@@ -1,0 +1,26 @@
+
+[tool.poetry]
+name = "launchii"
+version = "0.1.0"
+description = "a fast, cross-platform, Python-based app launcher, similar to Alfred or Wox"
+authors = ["SmatMan <gamingajun10@gmail.com>", "gigahurt <478848+gigahurt@users.noreply.github.com>"]
+license = "GPL-3.0-only"
+readme = "README.md"
+repository = "https://github.com/SmatMan/launchii"
+
+[tool.poetry.scripts]
+launchii = 'launchii.launchii:run'
+
+[tool.poetry.dependencies]
+python = "^3.9"
+PyQt6 = "^6.1"
+termcolor = "^1.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.0"
+black = "^21.7b0"
+mypy = "^0.910"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

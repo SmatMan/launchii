@@ -2,7 +2,7 @@ import os
 from collections import OrderedDict
 import getpass
 import json
-from crosssearch import searchIndex, getPath
+from launchii.crosssearch import searchIndex, getPath
 
 def createindex(path=[r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs", rf"C:\Users\{getpass.getuser()}\AppData\Roaming\Microsoft\Windows\Start Menu"]):
     rawFileList = {}
