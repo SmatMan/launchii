@@ -1,16 +1,13 @@
-import json
 import os
 from launchii.colours import *
 
 
 def main(searcher=None):
-    with open("index.json", "r") as f:  # load index
-        index = json.load(f)
 
     searchterm = input(cyan("Search: ")).lower()  # get search term
 
     while True:
-        results = searcher.searchIndex(index, searchterm)  # search index for term
+        results = searcher.search(searchterm)  # search index for term
 
         if len(results) == 0:  # if no results
             print("No results found.")
