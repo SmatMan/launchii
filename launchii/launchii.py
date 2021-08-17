@@ -15,7 +15,11 @@ import launchii.macappsearch
 
 
 def searcher(system):
-    return launchii.appsearch if system == "Windows" else launchii.macappsearch
+    return (
+        launchii.appsearch.StartMenuSearch()
+        if system == "Windows"
+        else launchii.macappsearch.OSXApplicationSearch()
+    )
 
 
 def main(cli, gui, print, args, searcher):

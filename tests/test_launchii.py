@@ -45,8 +45,10 @@ def test_cli_triggered_with_parameter(cli, gui, print_function, searcher):
 
 
 def test_searcher_on_windows():
-    assert launchii.searcher("Windows") == appsearch
+    assert isinstance(launchii.searcher("Windows"), appsearch.StartMenuSearch)
 
 
 def test_searcher_on_mac():
-    assert launchii.searcher("Something Else") == macappsearch
+    assert isinstance(
+        launchii.searcher("Something Else"), macappsearch.OSXApplicationSearch
+    )
