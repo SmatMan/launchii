@@ -14,6 +14,11 @@ rawFileList = {}
 
 
 class OSXApplicationSearch(BaseSearch):
+    
+    @staticmethod
+    def supported_environment(platform: str) -> bool:
+        return platform == "Darwin"
+
     def createIndex(self, path=path) -> OrderedDict:
         # For every filepath in path, find all the folders (no subdirectories) ending in .app and add them to the dict rawFileList
         for i in path:

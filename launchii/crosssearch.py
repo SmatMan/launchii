@@ -5,6 +5,11 @@ class BaseSearch:
 
     index: dict[str, str] = {}
 
+    @staticmethod
+    def supported_environment(platform: str) -> bool:
+        """Returns true if the searcher will run properly on this platform"""
+        ...
+
     def __init__(self):
         with open("index.json", "r") as f:  # load index
             self.index = json.load(f)
