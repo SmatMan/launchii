@@ -80,7 +80,7 @@ class launchiiwidget(QtWidgets.QWidget):
         item = self.listwidget.currentItem()
         if item is not None:
             print(item.text())
-            apppath = self.searcher.getPath(item.text())
+            apppath = self.searcher.get_path(item.text())
             if apppath is not None:
                 print(apppath)
                 os.system("open " + apppath)
