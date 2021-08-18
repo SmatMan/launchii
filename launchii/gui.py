@@ -2,7 +2,6 @@ import sys
 import random
 from PyQt6 import QtCore, QtWidgets, QtGui
 import time
-import json
 import os
 
 
@@ -49,8 +48,7 @@ class KeyHelper(QtCore.QObject):
 
 
 class launchiiwidget(QtWidgets.QWidget):
-    def __init__(self, index, searcher):
-        self.index = index
+    def __init__(self, searcher):
         self.searcher = searcher
         super().__init__()
         layout = QtWidgets.QVBoxLayout(self)
@@ -82,7 +80,7 @@ class launchiiwidget(QtWidgets.QWidget):
         item = self.listwidget.currentItem()
         if item is not None:
             print(item.text())
-            apppath = self.searcher.getPath(self.index, item.text())
+            apppath = self.searcher.getPath(item.text())
             if apppath is not None:
                 print(apppath)
                 os.system("open " + apppath)
@@ -90,10 +88,9 @@ class launchiiwidget(QtWidgets.QWidget):
 
 
 class Worker(QtCore.QThread):
-    def __init__(self, widget, index, searcher):
+    def __init__(self, widget, searcher):
         QtCore.QThread.__init__(self)
         self.widget = widget
-        self.index = index
         self.searcher = searcher
 
     def __del__(self):
@@ -106,7 +103,7 @@ class Worker(QtCore.QThread):
                 term = self.widget.textbox.text()
                 if term != "" and term != self.previous:
                     self.widget.listwidget.clear()
-                    for i in self.searcher.searchIndex(self.index, term):
+                    for i in self.searcher.search(term):
                         item = QtWidgets.QListWidgetItem(i)
                         item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                         # item.setIcon(QtGui.QIcon(self.searcher.getIcon(i)))
@@ -121,15 +118,12 @@ class Worker(QtCore.QThread):
 def main(searcher=None):
     app = QtWidgets.QApplication([])
 
-    with open("index.json", "r") as f:  # load index
-        index = json.load(f)
-
-    widget = launchiiwidget(index, searcher)
+    widget = launchiiwidget(searcher)
     widget.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
     widget.resize(600, 200)
     widget.show()
 
-    thread = Worker(widget, index, searcher)
+    thread = Worker(widget, searcher)
     thread.start()
 
     key_helper = KeyHelper(widget.windowHandle(), widget)
