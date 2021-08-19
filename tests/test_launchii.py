@@ -1,3 +1,4 @@
+import importlib
 import unittest.mock as mock
 import pytest
 
@@ -44,11 +45,20 @@ def test_cli_triggered_with_parameter(cli, gui, print_function, searcher):
     cli.main.assert_called_once()
 
 
-def test_searcher_on_windows():
-    assert isinstance(launchii.searcher("Windows"), appsearch.StartMenuSearch)
-
-
-def test_searcher_on_mac():
-    assert isinstance(
-        launchii.searcher("Something Else"), macappsearch.OSXApplicationSearch
+@pytest.mark.parametrize(
+    "platform, expected",
+    [
+        ("Darwin", macappsearch.OSXApplicationSearch),
+        ("Windows", appsearch.StartMenuSearch),
+    ],
+)
+def test_searcher_selected_when_platform(platform, expected):
+    searcher = launchii.searcher(
+        platform,
+        importlib.import_module,
+        [
+            "launchii.appsearch:StartMenuSearch",
+            "launchii.macappsearch:OSXApplicationSearch",
+        ],
     )
+    assert isinstance(searcher, expected)

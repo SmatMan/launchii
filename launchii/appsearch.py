@@ -6,6 +6,11 @@ from launchii.crosssearch import BaseSearch
 
 
 class StartMenuSearch(BaseSearch):
+    
+    @staticmethod
+    def supported_environment(platform: str) -> bool:
+        return platform == "Windows"
+
     def createindex(
         self,
         path=[
