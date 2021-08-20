@@ -13,18 +13,16 @@ import typing as t
 import launchii.cli
 import launchii.gui
 
-Loader = t.Callable[[str], object]
 
-
-def get_searcher_class(module_name: str, import_module: Loader) -> t.Type[BaseSearch]:
+def get_searcher_class(module_name: str) -> t.Type[BaseSearch]:
     pieces = module_name.split(":")
-    actual_module = import_module(pieces[0])
+    actual_module = importlib.import_module(pieces[0])
     return getattr(actual_module, pieces[1])
 
 
-def searcher(system: str, import_module: Loader, packages: t.List[str]) -> BaseSearch:
+def searcher(system: str, packages: t.List[str]) -> BaseSearch:
     for package in packages:
-        searcher_class = get_searcher_class(package, import_module)
+        searcher_class = get_searcher_class(package)
         if searcher_class.supported_environment(system):
             return searcher_class()
 
@@ -46,7 +44,6 @@ def run():
         sys.argv,
         searcher(
             platform.system(),
-            importlib.import_module,
             [
                 "launchii.appsearch:StartMenuSearch",
                 "launchii.macappsearch:OSXApplicationSearch",

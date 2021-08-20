@@ -1,4 +1,3 @@
-import importlib
 import unittest.mock as mock
 import pytest
 
@@ -55,7 +54,6 @@ def test_cli_triggered_with_parameter(cli, gui, print_function, searcher):
 def test_searcher_selected_when_platform(platform, expected):
     searcher = launchii.searcher(
         platform,
-        importlib.import_module,
         [
             "launchii.appsearch:StartMenuSearch",
             "launchii.macappsearch:OSXApplicationSearch",
