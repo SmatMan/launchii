@@ -1,8 +1,8 @@
 import os
 from collections import OrderedDict
 import getpass
-import json
 from glob import glob
+import functools
 
 path = [
     "/Applications",
@@ -17,23 +17,20 @@ class OSXApplicationSearch:
     def supported_environment(platform: str) -> bool:
         return platform == "Darwin"
 
-    def __init__(self):
-        with open("index.json", "r") as f:  # load index
-            self.index = json.load(f)
-
     def search(self, search_term) -> dict:
+        index = self._search_for_apps()
         results = {}
-        for i in self.index:  # iterate over index
-            if search_term in self.index[i].lower():  # if search term is in index
+        for i in index:  # iterate over index
+            if search_term in index[i].lower():  # if search term is in index
                 # append i to results as key and index[i] as value
-                results[i] = self.index[i]
+                results[i] = index[i]
         return results
 
     def get_path(self, term) -> str:
-        path = self.index[term]
-        return path
+        return self.search(term)[term]
 
-    def createIndex(self, path=path) -> OrderedDict:
+    @functools.cache
+    def _search_for_apps(self, path=path) -> OrderedDict:
         # For every filepath in path, find all the folders (no subdirectories) ending in .app and add them to the dict rawFileList
         for i in path:
             files = glob(f"{i}/*/")
@@ -47,12 +44,6 @@ class OSXApplicationSearch:
         for key, value in rawFileList.items():
             index[key] = value
         return index
-
-    def saveIndex(self, output="index.json") -> bool:
-        index = self.createIndex()
-        with open(output, "w") as f:
-            f.write(json.dumps(index, indent=4))
-        return True
 
     def getIcon(self, path) -> str:
         for i in glob(f"{path}/Contents/Resources/*.icns"):
