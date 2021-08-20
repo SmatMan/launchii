@@ -4,23 +4,23 @@ Usage:
     $ python launchii.py --cli
     $ python launchii.py --gui
 """
-from launchii.crosssearch import BaseSearch
 import sys
 import platform
 import importlib
 import typing as t
 
+from launchii.api import Searcher
 import launchii.cli
 import launchii.gui
 
 
-def get_searcher_class(module_name: str) -> t.Type[BaseSearch]:
+def get_searcher_class(module_name: str) -> t.Type[Searcher]:
     pieces = module_name.split(":")
     actual_module = importlib.import_module(pieces[0])
     return getattr(actual_module, pieces[1])
 
 
-def searcher(system: str, packages: t.List[str]) -> BaseSearch:
+def searcher(system: str, packages: t.List[str]) -> Searcher:
     for package in packages:
         searcher_class = get_searcher_class(package)
         if searcher_class.supported_environment(system):
