@@ -14,12 +14,6 @@ class Searcher(t.Protocol):
         """Returns true if the searcher will run properly on this platform"""
         ...
 
-    def __init__(self):
-        """Called when a searcher is selected for use
-
-        Plugin configuration will be passed in here"""
-        ...
-
     def search(self, search_term) -> dict:
         """Have this plugin search for a search term
 

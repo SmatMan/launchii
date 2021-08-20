@@ -1,17 +1,28 @@
 import os
 from collections import OrderedDict
 import getpass
-import json
-from launchii.crosssearch import BaseSearch
+import functools
 
 
-class StartMenuSearch(BaseSearch):
-    
+class StartMenuSearch:
     @staticmethod
     def supported_environment(platform: str) -> bool:
         return platform == "Windows"
 
-    def createindex(
+    def search(self, search_term) -> dict:
+        index = self._search_for_shortcuts()
+        results = {}
+        for i in index:  # iterate over index
+            if search_term in index[i].lower():  # if search term is in index
+                # append i to results as key and index[i] as value
+                results[i] = index[i]
+        return results
+
+    def get_path(self, term) -> str:
+        return self.search(term)[term]
+
+    @functools.cache
+    def _search_for_shortcuts(
         self,
         path=[
             r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs",
@@ -23,15 +34,9 @@ class StartMenuSearch(BaseSearch):
         for i in path:
             for root, dirs, files in os.walk(i, followlinks=False):
                 for file in files:
-                    print(file)
                     if file.endswith(".lnk") and not file.startswith("desktop"):
                         rawFileList[file.lower()] = os.path.join(root, file)
 
         filelist = OrderedDict(sorted(rawFileList.items(), key=lambda t: t[0]))
 
         return filelist
-
-    def saveIndex(self, output="index.json"):
-        index = self.createindex()
-        with open(output, "w") as f:
-            f.write(json.dumps(index, indent=4))
