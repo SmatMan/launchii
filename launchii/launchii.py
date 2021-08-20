@@ -4,27 +4,45 @@ Usage:
     $ python launchii.py --cli
     $ python launchii.py --gui
 """
-from launchii.crosssearch import BaseSearch
 import sys
 import platform
 import importlib
 import typing as t
+import pathlib
+import json
 
+import appdirs
+
+from launchii.api import Searcher
 import launchii.cli
 import launchii.gui
 
-Loader = t.Callable[[str], object]
+_default_plugins = [
+    "launchii.appsearch:StartMenuSearch",
+    "launchii.macappsearch:OSXApplicationSearch",
+]
 
 
-def get_searcher_class(module_name: str, import_module: Loader) -> t.Type[BaseSearch]:
+def load_plugins(config_dir: pathlib.Path, default) -> t.List[str]:
+    try:
+        with open(config_dir / "plugins.json") as f:
+            return json.load(f)
+    except FileNotFoundError as err:
+        config_dir.mkdir(parents=True, exist_ok=True)
+        with open(config_dir / "plugins.json", "w") as f:
+            json.dump(default, f)
+        return default
+
+
+def get_searcher_class(module_name: str) -> t.Type[Searcher]:
     pieces = module_name.split(":")
-    actual_module = import_module(pieces[0])
+    actual_module = importlib.import_module(pieces[0])
     return getattr(actual_module, pieces[1])
 
 
-def searcher(system: str, import_module: Loader, packages: t.List[str]) -> BaseSearch:
+def searcher(system: str, packages: t.List[str]) -> Searcher:
     for package in packages:
-        searcher_class = get_searcher_class(package, import_module)
+        searcher_class = get_searcher_class(package)
         if searcher_class.supported_environment(system):
             return searcher_class()
 
@@ -39,6 +57,8 @@ def main(cli, gui, print, args, searcher):
 
 
 def run():
+    dirs = appdirs.AppDirs("launchii")
+
     main(
         launchii.cli,
         launchii.gui,
@@ -46,10 +66,6 @@ def run():
         sys.argv,
         searcher(
             platform.system(),
-            importlib.import_module,
-            [
-                "launchii.appsearch:StartMenuSearch",
-                "launchii.macappsearch:OSXApplicationSearch",
-            ],
+            load_plugins(pathlib.Path(dirs.user_config_dir), _default_plugins),
         ),
     )

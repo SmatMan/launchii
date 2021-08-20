@@ -15,6 +15,7 @@ launchii = 'launchii.launchii:run'
 python = "^3.9"
 PyQt6 = "^6.1"
 termcolor = "^1.1"
+appdirs = "^1.4.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
