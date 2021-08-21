@@ -1,6 +1,5 @@
 import sys
-import random
-from PyQt6 import QtCore, QtWidgets, QtGui
+from PyQt6 import QtCore, QtWidgets
 import time
 
 
@@ -130,7 +129,3 @@ def main(searcher, runner):
     key_helper.pressed.connect(widget.enterpressed)
 
     sys.exit(app.exec())
-
-
-if __name__ == "__main__":
-    main()
