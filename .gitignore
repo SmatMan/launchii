@@ -126,3 +126,4 @@ dmypy.json
 index.json
 
 out.txt
+.DS_Store
