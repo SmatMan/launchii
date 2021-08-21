@@ -1,3 +1,4 @@
+import os
 import unittest.mock as mock
 import pytest
 import json
@@ -27,21 +28,28 @@ def searcher():
     return mock.Mock()
 
 
-def test_default_behavior_prints_documentation(cli, gui, print_function, searcher):
+@pytest.fixture
+def runner():
+    return mock.Mock()
+
+
+def test_default_behavior_prints_documentation(
+    cli, gui, print_function, searcher, runner
+):
     args = []
-    launchii.main(cli, gui, print_function, args, searcher)
+    launchii.main(cli, gui, print_function, args, searcher, runner)
     print_function.assert_called_once_with(launchii.__doc__)
 
 
-def test_gui_triggered_with_parameter(cli, gui, print_function, searcher):
+def test_gui_triggered_with_parameter(cli, gui, print_function, searcher, runner):
     args = ["--gui"]
-    launchii.main(cli, gui, print_function, args, searcher)
+    launchii.main(cli, gui, print_function, args, searcher, runner)
     gui.main.assert_called_once()
 
 
-def test_cli_triggered_with_parameter(cli, gui, print_function, searcher):
+def test_cli_triggered_with_parameter(cli, gui, print_function, searcher, runner):
     args = ["--cli"]
-    launchii.main(cli, gui, print_function, args, searcher)
+    launchii.main(cli, gui, print_function, args, searcher, runner)
     cli.main.assert_called_once()
 
 
@@ -79,3 +87,11 @@ def test_plugins_create_default_files_if_not_found(tmp_path):
     plugin_file = open(tmp_path / "plugins.json", "r")
     assert json.load(plugin_file) == ["a", "b"]
     plugin_file.close()
+
+
+def test_windows_runner():
+    assert launchii.runner("Windows") == os.startfile
+
+
+def test_osx_runner():
+    assert launchii.runner("Darwin") == launchii.osxopen

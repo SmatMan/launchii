@@ -1,8 +1,7 @@
-import os
 from launchii.colours import *
 
 
-def main(searcher=None):
+def main(searcher, runner):
 
     searchterm = input(cyan("Search: ")).lower()  # get search term
 
@@ -28,7 +27,7 @@ def main(searcher=None):
                 )
 
                 if shouldOpen == "y":
-                    os.system("open " + result)
+                    runner(result)
                     break
                 else:
                     break

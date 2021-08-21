@@ -1,8 +1,6 @@
 import sys
-import random
-from PyQt6 import QtCore, QtWidgets, QtGui
+from PyQt6 import QtCore, QtWidgets
 import time
-import os
 
 
 class KeyHelper(QtCore.QObject):
@@ -28,7 +26,6 @@ class KeyHelper(QtCore.QObject):
                     QtCore.Qt.Key.Key_Right,
                 ):
                     self.pressed.emit()
-                    print("yes")
                     return True
             elif self.widget.textbox.hasFocus():
                 if event.key() in (
@@ -48,8 +45,9 @@ class KeyHelper(QtCore.QObject):
 
 
 class launchiiwidget(QtWidgets.QWidget):
-    def __init__(self, searcher):
+    def __init__(self, searcher, runner):
         self.searcher = searcher
+        self.runner = runner
         super().__init__()
         layout = QtWidgets.QVBoxLayout(self)
 
@@ -79,12 +77,10 @@ class launchiiwidget(QtWidgets.QWidget):
     def enterpressed(self):
         item = self.listwidget.currentItem()
         if item is not None:
-            print(item.text())
             apppath = self.searcher.get_path(item.text())
             if apppath is not None:
-                print(apppath)
-                os.system("open " + apppath)
-                self.window.close()
+                self.runner(apppath)
+                self.close()
 
 
 class Worker(QtCore.QThread):
@@ -115,10 +111,10 @@ class Worker(QtCore.QThread):
             time.sleep(0.1)
 
 
-def main(searcher=None):
+def main(searcher, runner):
     app = QtWidgets.QApplication([])
 
-    widget = launchiiwidget(searcher)
+    widget = launchiiwidget(searcher, runner)
     widget.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
     widget.resize(600, 200)
     widget.show()
@@ -130,7 +126,3 @@ def main(searcher=None):
     key_helper.pressed.connect(widget.enterpressed)
 
     sys.exit(app.exec())
-
-
-if __name__ == "__main__":
-    main()

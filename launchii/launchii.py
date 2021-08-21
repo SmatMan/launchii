@@ -4,6 +4,7 @@ Usage:
     $ python launchii.py --cli
     $ python launchii.py --gui
 """
+import os
 import sys
 import platform
 import importlib
@@ -47,11 +48,19 @@ def searcher(system: str, packages: t.List[str]) -> Searcher:
             return searcher_class()
 
 
-def main(cli, gui, print, args, searcher):
+def osxopen(program: str):
+    return os.system("open " + program)
+
+
+def runner(platform: str):
+    return os.startfile if platform == "Windows" else osxopen
+
+
+def main(cli, gui, print, args, searcher, runner):
     if "--cli" in args:
-        cli.main(searcher)
+        cli.main(searcher, runner)
     elif "--gui" in args:
-        gui.main(searcher)
+        gui.main(searcher, runner)
     else:
         print(__doc__)
 
@@ -68,4 +77,5 @@ def run():
             platform.system(),
             load_plugins(pathlib.Path(dirs.user_config_dir), _default_plugins),
         ),
+        runner(platform.system()),
     )
