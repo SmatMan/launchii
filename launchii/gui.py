@@ -2,7 +2,6 @@ import sys
 import random
 from PyQt6 import QtCore, QtWidgets, QtGui
 import time
-import os
 
 
 class KeyHelper(QtCore.QObject):
@@ -48,8 +47,9 @@ class KeyHelper(QtCore.QObject):
 
 
 class launchiiwidget(QtWidgets.QWidget):
-    def __init__(self, searcher):
+    def __init__(self, searcher, runner):
         self.searcher = searcher
+        self.runner = runner
         super().__init__()
         layout = QtWidgets.QVBoxLayout(self)
 
@@ -83,7 +83,7 @@ class launchiiwidget(QtWidgets.QWidget):
             apppath = self.searcher.get_path(item.text())
             if apppath is not None:
                 print(apppath)
-                os.system("open " + apppath)
+                self.runner(apppath)
                 self.window.close()
 
 
@@ -115,10 +115,10 @@ class Worker(QtCore.QThread):
             time.sleep(0.1)
 
 
-def main(searcher=None):
+def main(searcher, runner):
     app = QtWidgets.QApplication([])
 
-    widget = launchiiwidget(searcher)
+    widget = launchiiwidget(searcher, runner)
     widget.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
     widget.resize(600, 200)
     widget.show()
