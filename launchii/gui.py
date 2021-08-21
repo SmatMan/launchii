@@ -26,7 +26,6 @@ class KeyHelper(QtCore.QObject):
                     QtCore.Qt.Key.Key_Right,
                 ):
                     self.pressed.emit()
-                    print("yes")
                     return True
             elif self.widget.textbox.hasFocus():
                 if event.key() in (
@@ -78,12 +77,10 @@ class launchiiwidget(QtWidgets.QWidget):
     def enterpressed(self):
         item = self.listwidget.currentItem()
         if item is not None:
-            print(item.text())
             apppath = self.searcher.get_path(item.text())
             if apppath is not None:
-                print(apppath)
                 self.runner(apppath)
-                self.window.close()
+                self.close()
 
 
 class Worker(QtCore.QThread):
