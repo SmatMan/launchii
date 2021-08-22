@@ -19,7 +19,3 @@ class Searcher(t.Protocol):
 
         Returns a dictionary that maps search terms to values"""
         ...
-
-    def get_path(self, term) -> str:
-        """Have this plugin search for an exact term and return the value"""
-        ...

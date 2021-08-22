@@ -18,9 +18,6 @@ class StartMenuSearch:
                 results[i] = index[i]
         return results
 
-    def get_path(self, term) -> str:
-        return self.search(term)[term]
-
     @functools.cache
     def _search_for_shortcuts(
         self,

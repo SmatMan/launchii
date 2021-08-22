@@ -26,9 +26,6 @@ class OSXApplicationSearch:
                 results[i] = index[i]
         return results
 
-    def get_path(self, term) -> str:
-        return self.search(term)[term]
-
     @functools.cache
     def _search_for_apps(self, path=path) -> OrderedDict:
         # For every filepath in path, find all the folders (no subdirectories) ending in .app and add them to the dict rawFileList
