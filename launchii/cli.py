@@ -13,21 +13,20 @@ def main(searcher, runner):
             break
         else:
             # print every item from results with a number in front from 1-n, maximum 10
-            for i, item in enumerate(results):
-                print(str(i + 1) + ". " + yellow(str(item)) + "\n")
+            for i, result in enumerate(results):
+                print(str(i + 1) + ". " + yellow(str(result.name)) + "\n")
             # ask user to select result and get index
-            option = input(cyan("Select result or start new search: "))
+            option = int(input(cyan("Select result or start new search: "))) - 1
             # check if option is a number
             try:
-                option = int(option)
-                result = results[list(results.keys())[option - 1]]
+                result = results[option]
                 # ask user if they want to open the app, if yes, open app using os.system("open")
                 shouldOpen = input(
-                    f"Type {yellow('y')} to open {green(str(list(results.keys())[option-1]))}, or {yellow('n')} to quit: "
+                    f"Type {yellow('y')} to open {green(result.name)}, or {yellow('n')} to quit: "
                 )
 
                 if shouldOpen == "y":
-                    runner(result)
+                    runner(result.location)
                     break
                 else:
                     break
