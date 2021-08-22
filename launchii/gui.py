@@ -76,14 +76,14 @@ class launchiiwidget(QtWidgets.QWidget):
     def enterpressed(self):
         item = self.listwidget.currentItem()
         if item is not None:
-            apppath = item.launchii_loc
+            apppath = item.launchii_value.location
             if apppath is not None:
                 self.runner(apppath)
                 self.close()
 
 
 class QListWidgetResult(QtWidgets.QListWidgetItem):
-    launchii_loc: str
+    launchii_value: str
 
 
 class Worker(QtCore.QThread):
@@ -103,9 +103,9 @@ class Worker(QtCore.QThread):
                 if term != "" and term != self.previous:
                     self.widget.listwidget.clear()
                     results = self.searcher.search(term)
-                    for i in results:
-                        item = QListWidgetResult(i)
-                        item.launchii_loc = results[i]
+                    for result in results:
+                        item = QListWidgetResult(result.name)
+                        item.launchii_value = result
                         item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                         # item.setIcon(QtGui.QIcon(self.searcher.getIcon(i)))
                         # print(self.searcher.getIcon(i))

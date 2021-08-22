@@ -5,7 +5,17 @@ the coordinates to the object to the launchii main method
 a plugin developer can add arbitrary search capabilities.
 """
 
-from typing import Protocol
+import pathlib
+from typing import List, Protocol, Union
+from dataclasses import dataclass
+
+Location = Union[pathlib.Path, str]
+
+
+@dataclass
+class Result:
+    name: str
+    location: Location
 
 
 class Searcher(Protocol):
@@ -14,8 +24,8 @@ class Searcher(Protocol):
         """Returns true if the searcher will run properly on this platform"""
         ...
 
-    def search(self, search_term) -> dict:
+    def search(self, search_term) -> List[Result]:
         """Have this plugin search for a search term
 
-        Returns a dictionary that maps search terms to values"""
+        Returns a list of search results"""
         ...

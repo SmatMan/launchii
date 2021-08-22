@@ -4,7 +4,6 @@ import pytest
 import json
 
 import launchii.appsearch as appsearch
-import launchii.macappsearch as macappsearch
 import launchii.launchii as launchii
 
 
@@ -56,7 +55,7 @@ def test_cli_triggered_with_parameter(cli, gui, print_function, searcher, runner
 @pytest.mark.parametrize(
     "platform, expected",
     [
-        ("Darwin", macappsearch.OSXApplicationSearch),
+        ("Darwin", appsearch.OSXApplicationSearch),
         ("Windows", appsearch.StartMenuSearch),
     ],
 )
@@ -65,17 +64,17 @@ def test_searcher_selected_when_platform(platform, expected):
         platform,
         [
             "launchii.appsearch:StartMenuSearch",
-            "launchii.macappsearch:OSXApplicationSearch",
+            "launchii.appsearch:OSXApplicationSearch",
         ],
     )
     assert isinstance(searcher, expected)
 
 
-def test_plugins_loaded_from_file(tmp_path):
+def test_plugins_always_returning_defaults(tmp_path):
     plugin_file = open(tmp_path / "plugins.json", "w+")
     json.dump(["x", "y"], plugin_file)
     plugin_file.close()
-    assert launchii.load_plugins(tmp_path, ["a", "b"]) == ["x", "y"]
+    assert launchii.load_plugins(tmp_path, ["a", "b"]) == ["a", "b"]
 
 
 def test_plugins_default_if_file_not_found(tmp_path):

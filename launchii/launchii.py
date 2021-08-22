@@ -20,14 +20,14 @@ import launchii.gui
 
 _default_plugins = [
     "launchii.appsearch:StartMenuSearch",
-    "launchii.macappsearch:OSXApplicationSearch",
+    "launchii.appsearch:OSXApplicationSearch",
 ]
 
 
 def load_plugins(config_dir: pathlib.Path, default) -> t.List[str]:
     try:
         with open(config_dir / "plugins.json") as f:
-            return json.load(f)
+            return default
     except FileNotFoundError as err:
         config_dir.mkdir(parents=True, exist_ok=True)
         with open(config_dir / "plugins.json", "w") as f:

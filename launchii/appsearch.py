@@ -1,39 +1,74 @@
-import os
-from collections import OrderedDict
-import getpass
+import pathlib
 import functools
+from typing import Callable, List
+
+from launchii.api import Result
 
 
-class StartMenuSearch:
+class FileSearch:
+
+    roots: List[pathlib.Path] = []
+    globs: List[str] = []
+    predicates: List[Callable[[pathlib.Path], bool]] = []
+
+    def result_builder(self, file) -> Result:
+        return Result(file.name.lower(), file)
+
+    def search(self, search_term: str) -> List[Result]:
+        return list(
+            filter(
+                lambda r: search_term in str(r.location).lower(),
+                self._search_for_apps(),
+            )
+        )
+
+    @functools.cache
+    def _search_for_apps(self) -> List[Result]:
+
+        rawFileList = []
+        for root in self.roots:
+            for glob in self.globs:
+                for file in root.glob(glob):
+                    if all(map(lambda p: p(file), self.predicates)):
+                        rawFileList.append(self.result_builder(file))
+
+        return sorted(rawFileList, key=lambda r: r.name)
+
+
+class StartMenuSearch(FileSearch):
+
+    roots = [
+        pathlib.Path("C:/ProgramData/Microsoft/Windows/Start Menu/Programs"),
+        pathlib.Path.home() / "AppData/Roaming/Microsoft/Windows/Start Menu",
+    ]
+
+    globs = ["**/*.lnk"]
+
+    predicates = [lambda path: not path.name.startswith("desktop")]
+
     @staticmethod
     def supported_environment(platform: str) -> bool:
         return platform == "Windows"
 
-    def search(self, search_term) -> dict:
-        index = self._search_for_shortcuts()
-        results = {}
-        for i in index:  # iterate over index
-            if search_term in index[i].lower():  # if search term is in index
-                # append i to results as key and index[i] as value
-                results[i] = index[i]
-        return results
 
-    @functools.cache
-    def _search_for_shortcuts(
-        self,
-        path=[
-            r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs",
-            rf"C:\Users\{getpass.getuser()}\AppData\Roaming\Microsoft\Windows\Start Menu",
-        ],
-    ):
-        rawFileList = {}
+class OSXApplicationSearch(FileSearch):
 
-        for i in path:
-            for root, dirs, files in os.walk(i, followlinks=False):
-                for file in files:
-                    if file.endswith(".lnk") and not file.startswith("desktop"):
-                        rawFileList[file.lower()] = os.path.join(root, file)
+    roots = [
+        pathlib.Path("/Applications"),
+        pathlib.Path("/System/Applications"),
+        pathlib.Path.home() / "Applications",
+    ]
 
-        filelist = OrderedDict(sorted(rawFileList.items(), key=lambda t: t[0]))
+    globs = ["*.app"]
 
-        return filelist
+    def result_builder(self, file) -> Result:
+        return Result(file.stem, file)
+
+    @staticmethod
+    def supported_environment(platform: str) -> bool:
+        return platform == "Darwin"
+
+    def getIcon(self, path: pathlib.Path) -> pathlib.Path:
+        for i in path.glob(f"Contents/Resources/*.icns"):
+            icon = i
+        return icon
