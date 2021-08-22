@@ -26,7 +26,7 @@ def main(searcher, runner):
                 )
 
                 if shouldOpen == "y":
-                    runner(result.location)
+                    runner.do(result)
                     break
                 else:
                     break

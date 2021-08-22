@@ -6,7 +6,7 @@ a plugin developer can add arbitrary search capabilities.
 """
 
 import pathlib
-from typing import List, Protocol, Union
+from typing import Any, List, Protocol, Union, runtime_checkable
 from dataclasses import dataclass
 
 Location = Union[pathlib.Path, str]
@@ -18,14 +18,24 @@ class Result:
     location: Location
 
 
-class Searcher(Protocol):
+class Plugin(Protocol):
     @staticmethod
     def supported_environment(platform: str) -> bool:
         """Returns true if the searcher will run properly on this platform"""
         ...
 
-    def search(self, search_term) -> List[Result]:
+
+@runtime_checkable
+class Searcher(Protocol):
+    def search(self, search_term: str) -> List[Result]:
         """Have this plugin search for a search term
 
         Returns a list of search results"""
+        ...
+
+
+@runtime_checkable
+class Action(Protocol):
+    def do(self, result: Result) -> Any:
+        """Preliminay interface for actions"""
         ...
