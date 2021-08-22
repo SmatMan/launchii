@@ -14,7 +14,7 @@ import json
 
 import appdirs
 
-from launchii.api import Searcher
+from launchii.api import Location, Searcher
 import launchii.cli
 import launchii.gui
 
@@ -48,8 +48,8 @@ def searcher(system: str, packages: t.List[str]) -> Searcher:
             return searcher_class()
 
 
-def osxopen(program: str):
-    return os.system("open " + program)
+def osxopen(program: Location):
+    return os.system(f'open "{str(program)}"')
 
 
 def runner(platform: str):

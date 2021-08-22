@@ -1,3 +1,4 @@
+from launchii.api import Result
 import sys
 from PyQt6 import QtCore, QtWidgets
 import time
@@ -74,7 +75,7 @@ class launchiiwidget(QtWidgets.QWidget):
             self.listwidget.setCurrentIndex(index)
 
     def enterpressed(self):
-        item = self.listwidget.currentItem()
+        item: QListWidgetResult = self.listwidget.currentItem()
         if item is not None:
             apppath = item.launchii_value.location
             if apppath is not None:
@@ -83,7 +84,7 @@ class launchiiwidget(QtWidgets.QWidget):
 
 
 class QListWidgetResult(QtWidgets.QListWidgetItem):
-    launchii_value: str
+    launchii_value: Result
 
 
 class Worker(QtCore.QThread):
