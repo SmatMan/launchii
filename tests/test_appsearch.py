@@ -1,4 +1,4 @@
-from launchii.api import Result
+from launchii.api import Item
 import launchii.appsearch as app
 import pathlib
 

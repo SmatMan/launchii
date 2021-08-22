@@ -7,9 +7,9 @@ Usage:
 import sys
 import platform
 import importlib
-import typing as t
 import pathlib
 import json
+from typing import List, Tuple
 
 import appdirs
 
@@ -25,7 +25,7 @@ _default_plugins = [
 ]
 
 
-def load_plugin_file(config_dir: pathlib.Path, default) -> t.List[str]:
+def load_plugin_file(config_dir: pathlib.Path, default) -> List[str]:
     try:
         with open(config_dir / "plugins.json") as f:
             return default
@@ -37,11 +37,11 @@ def load_plugin_file(config_dir: pathlib.Path, default) -> t.List[str]:
 
 
 def instantiate_plugins(
-    system: str, packages: t.List[str]
-) -> t.Tuple[t.List[Searcher], t.List[Action]]:
+    system: str, packages: List[str]
+) -> Tuple[List[Searcher], List[Action]]:
 
-    searchers: t.List[Searcher] = []
-    actions: t.List[Action] = []
+    searchers: List[Searcher] = []
+    actions: List[Action] = []
 
     for package in packages:
         pieces = package.split(":")

@@ -2,7 +2,7 @@ import pathlib
 import functools
 from typing import Callable, List
 
-from launchii.api import Result
+from launchii.api import Item
 
 
 class FileSearch:
@@ -11,10 +11,10 @@ class FileSearch:
     globs: List[str] = []
     predicates: List[Callable[[pathlib.Path], bool]] = []
 
-    def result_builder(self, file) -> Result:
-        return Result(file.name.lower(), file)
+    def result_builder(self, file) -> Item:
+        return Item(file.name.lower(), file)
 
-    def search(self, search_term: str) -> List[Result]:
+    def search(self, search_term: str) -> List[Item]:
         return list(
             filter(
                 lambda r: search_term in str(r.location).lower(),
@@ -23,7 +23,7 @@ class FileSearch:
         )
 
     @functools.cache
-    def _search_for_apps(self) -> List[Result]:
+    def _search_for_apps(self) -> List[Item]:
 
         rawFileList = []
         for root in self.roots:
@@ -61,8 +61,8 @@ class OSXApplicationSearch(FileSearch):
 
     globs = ["*.app"]
 
-    def result_builder(self, file) -> Result:
-        return Result(file.stem, file)
+    def result_builder(self, file) -> Item:
+        return Item(file.stem, file)
 
     @staticmethod
     def supported_environment(platform: str) -> bool:

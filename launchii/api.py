@@ -13,7 +13,7 @@ Location = Union[pathlib.Path, str]
 
 
 @dataclass
-class Result:
+class Item:
     name: str
     location: Location
 
@@ -27,7 +27,7 @@ class Plugin(Protocol):
 
 @runtime_checkable
 class Searcher(Protocol):
-    def search(self, search_term: str) -> List[Result]:
+    def search(self, search_term: str) -> List[Item]:
         """Have this plugin search for a search term
 
         Returns a list of search results"""
@@ -36,6 +36,6 @@ class Searcher(Protocol):
 
 @runtime_checkable
 class Action(Protocol):
-    def do(self, result: Result) -> Any:
+    def do(self, result: Item) -> Any:
         """Preliminay interface for actions"""
         ...

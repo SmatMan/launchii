@@ -1,4 +1,4 @@
-from launchii.api import Result
+from launchii.api import Item
 import sys
 from PyQt6 import QtCore, QtWidgets
 import time
@@ -82,7 +82,7 @@ class launchiiwidget(QtWidgets.QWidget):
 
 
 class QListWidgetResult(QtWidgets.QListWidgetItem):
-    launchii_value: Result
+    launchii_value: Item
 
 
 class Worker(QtCore.QThread):
