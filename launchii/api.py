@@ -5,10 +5,10 @@ the coordinates to the object to the launchii main method
 a plugin developer can add arbitrary search capabilities.
 """
 
-import typing as t
+from typing import Protocol
 
 
-class Searcher(t.Protocol):
+class Searcher(Protocol):
     @staticmethod
     def supported_environment(platform: str) -> bool:
         """Returns true if the searcher will run properly on this platform"""
