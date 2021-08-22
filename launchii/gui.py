@@ -77,10 +77,8 @@ class launchiiwidget(QtWidgets.QWidget):
     def enterpressed(self):
         item: QListWidgetResult = self.listwidget.currentItem()
         if item is not None:
-            apppath = item.launchii_value.location
-            if apppath is not None:
-                self.runner(apppath)
-                self.close()
+            self.runner.do(item.launchii_value)
+            self.close()
 
 
 class QListWidgetResult(QtWidgets.QListWidgetItem):

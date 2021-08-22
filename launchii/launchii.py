@@ -4,7 +4,6 @@ Usage:
     $ python launchii.py --cli
     $ python launchii.py --gui
 """
-import os
 import sys
 import platform
 import importlib
@@ -14,17 +13,19 @@ import json
 
 import appdirs
 
-from launchii.api import Location, Searcher
+from launchii.api import Action, Searcher
 import launchii.cli
 import launchii.gui
 
 _default_plugins = [
     "launchii.appsearch:StartMenuSearch",
     "launchii.appsearch:OSXApplicationSearch",
+    "launchii.openaction:WindowsOpen",
+    "launchii.openaction:OSXOpen",
 ]
 
 
-def load_plugins(config_dir: pathlib.Path, default) -> t.List[str]:
+def load_plugin_file(config_dir: pathlib.Path, default) -> t.List[str]:
     try:
         with open(config_dir / "plugins.json") as f:
             return default
@@ -35,25 +36,25 @@ def load_plugins(config_dir: pathlib.Path, default) -> t.List[str]:
         return default
 
 
-def get_searcher_class(module_name: str) -> t.Type[Searcher]:
-    pieces = module_name.split(":")
-    actual_module = importlib.import_module(pieces[0])
-    return getattr(actual_module, pieces[1])
+def instantiate_plugins(
+    system: str, packages: t.List[str]
+) -> t.Tuple[t.List[Searcher], t.List[Action]]:
 
+    searchers: t.List[Searcher] = []
+    actions: t.List[Action] = []
 
-def searcher(system: str, packages: t.List[str]) -> Searcher:
     for package in packages:
-        searcher_class = get_searcher_class(package)
-        if searcher_class.supported_environment(system):
-            return searcher_class()
+        pieces = package.split(":")
+        actual_module = importlib.import_module(pieces[0])
+        class_ = getattr(actual_module, pieces[1])
+        if class_.supported_environment(system):
+            instance = class_()
+            if isinstance(instance, Searcher):
+                searchers.append(instance)
+            elif isinstance(instance, Action):
+                actions.append(instance)
 
-
-def osxopen(program: Location):
-    return os.system(f'open "{str(program)}"')
-
-
-def runner(platform: str):
-    return os.startfile if platform == "Windows" else osxopen
+    return (searchers, actions)
 
 
 def main(cli, gui, print, args, searcher, runner):
@@ -67,15 +68,8 @@ def main(cli, gui, print, args, searcher, runner):
 
 def run():
     dirs = appdirs.AppDirs("launchii")
+    plugin_list = load_plugin_file(pathlib.Path(dirs.user_config_dir), _default_plugins)
 
-    main(
-        launchii.cli,
-        launchii.gui,
-        print,
-        sys.argv,
-        searcher(
-            platform.system(),
-            load_plugins(pathlib.Path(dirs.user_config_dir), _default_plugins),
-        ),
-        runner(platform.system()),
-    )
+    (searchers, actions) = instantiate_plugins(platform.system(), plugin_list)
+
+    main(launchii.cli, launchii.gui, print, sys.argv, searchers[0], actions[0])
