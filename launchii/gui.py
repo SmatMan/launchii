@@ -115,18 +115,23 @@ class Worker(QtCore.QThread):
             time.sleep(0.1)
 
 
-def main(searcher, runner):
-    app = QtWidgets.QApplication([])
+class Gui:
+    def __init__(self, searcher, action) -> None:
+        self.searcher = searcher
+        self.action = action
 
-    widget = launchiiwidget(runner)
-    widget.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
-    widget.resize(600, 200)
-    widget.show()
+    def start(self):
+        app = QtWidgets.QApplication([])
 
-    thread = Worker(widget, searcher)
-    thread.start()
+        widget = launchiiwidget(self.action)
+        widget.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
+        widget.resize(600, 200)
+        widget.show()
 
-    key_helper = KeyHelper(widget.windowHandle(), widget)
-    key_helper.pressed.connect(widget.enterpressed)
+        thread = Worker(widget, self.searcher)
+        thread.start()
 
-    sys.exit(app.exec())
+        key_helper = KeyHelper(widget.windowHandle(), widget)
+        key_helper.pressed.connect(widget.enterpressed)
+
+        sys.exit(app.exec())

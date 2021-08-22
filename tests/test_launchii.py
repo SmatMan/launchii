@@ -43,13 +43,13 @@ def test_default_behavior_prints_documentation(
 def test_gui_triggered_with_parameter(cli, gui, print_function, searcher, runner):
     args = ["--gui"]
     launchii.main(cli, gui, print_function, args, searcher, runner)
-    gui.main.assert_called_once()
+    gui.assert_called_once()
 
 
 def test_cli_triggered_with_parameter(cli, gui, print_function, searcher, runner):
     args = ["--cli"]
     launchii.main(cli, gui, print_function, args, searcher, runner)
-    cli.main.assert_called_once()
+    cli.assert_called_once()
 
 
 @pytest.mark.parametrize(

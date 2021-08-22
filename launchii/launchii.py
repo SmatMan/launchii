@@ -59,9 +59,9 @@ def instantiate_plugins(
 
 def main(cli, gui, print, args, searcher, runner):
     if "--cli" in args:
-        cli.main(searcher, runner)
+        cli(searcher, runner).start()
     elif "--gui" in args:
-        gui.main(searcher, runner)
+        gui(searcher, runner).start()
     else:
         print(__doc__)
 
@@ -72,4 +72,4 @@ def run():
 
     (searchers, actions) = instantiate_plugins(platform.system(), plugin_list)
 
-    main(launchii.cli, launchii.gui, print, sys.argv, searchers[0], actions[0])
+    main(launchii.cli.Cli, launchii.gui.Gui, print, sys.argv, searchers[0], actions[0])

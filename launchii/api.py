@@ -39,3 +39,8 @@ class Action(Protocol):
     def do(self, result: Item) -> Any:
         """Preliminay interface for actions"""
         ...
+
+
+class UserInterface(Protocol):
+    def start(self):
+        ...
