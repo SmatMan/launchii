@@ -44,3 +44,16 @@ class Action(Protocol):
 class UserInterface(Protocol):
     def start(self):
         ...
+
+
+class Solution(Protocol):
+    def describe(self) -> str:
+        ...
+
+    def execute(self) -> Any:
+        ...
+
+
+class Launchii(Protocol):
+    def search(self, search_term: str) -> List[Solution]:
+        ...
