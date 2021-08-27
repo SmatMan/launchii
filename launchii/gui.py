@@ -1,4 +1,4 @@
-from launchii.api import Result
+from launchii.api import Item, Launchii, Solution
 import sys
 from PyQt6 import QtCore, QtWidgets
 import time
@@ -46,8 +46,7 @@ class KeyHelper(QtCore.QObject):
 
 
 class launchiiwidget(QtWidgets.QWidget):
-    def __init__(self, runner):
-        self.runner = runner
+    def __init__(self):
         super().__init__()
         layout = QtWidgets.QVBoxLayout(self)
 
@@ -77,19 +76,19 @@ class launchiiwidget(QtWidgets.QWidget):
     def enterpressed(self):
         item: QListWidgetResult = self.listwidget.currentItem()
         if item is not None:
-            self.runner.do(item.launchii_value)
+            item.launchii_solution.execute()
             self.close()
 
 
 class QListWidgetResult(QtWidgets.QListWidgetItem):
-    launchii_value: Result
+    launchii_solution: Solution
 
 
 class Worker(QtCore.QThread):
-    def __init__(self, widget, searcher):
+    def __init__(self, widget, launchii: Launchii):
         QtCore.QThread.__init__(self)
         self.widget = widget
-        self.searcher = searcher
+        self.launchii = launchii
 
     def __del__(self):
         self.wait()
@@ -101,13 +100,13 @@ class Worker(QtCore.QThread):
                 term = self.widget.textbox.text()
                 if term != "" and term != self.previous:
                     self.widget.listwidget.clear()
-                    results = self.searcher.search(term)
+                    results = self.launchii.search(term)
                     for result in results:
-                        item = QListWidgetResult(result.name)
-                        item.launchii_value = result
+                        item = QListWidgetResult(result.describe())
+                        item.launchii_solution = result
                         item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-                        # item.setIcon(QtGui.QIcon(self.searcher.getIcon(i)))
-                        # print(self.searcher.getIcon(i))
+                        # item.setIcon(QtGui.QIcon(self.launchii.getIcon(i)))
+                        # print(self.launchii.getIcon(i))
                         self.widget.listwidget.addItem(item)
                 self.previous = term
             except:
@@ -115,18 +114,22 @@ class Worker(QtCore.QThread):
             time.sleep(0.1)
 
 
-def main(searcher, runner):
-    app = QtWidgets.QApplication([])
+class Gui:
+    def __init__(self, launchii: Launchii) -> None:
+        self.launchii = launchii
 
-    widget = launchiiwidget(runner)
-    widget.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
-    widget.resize(600, 200)
-    widget.show()
+    def start(self):
+        app = QtWidgets.QApplication([])
 
-    thread = Worker(widget, searcher)
-    thread.start()
+        widget = launchiiwidget()
+        widget.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
+        widget.resize(600, 200)
+        widget.show()
 
-    key_helper = KeyHelper(widget.windowHandle(), widget)
-    key_helper.pressed.connect(widget.enterpressed)
+        thread = Worker(widget, self.launchii)
+        thread.start()
 
-    sys.exit(app.exec())
+        key_helper = KeyHelper(widget.windowHandle(), widget)
+        key_helper.pressed.connect(widget.enterpressed)
+
+        sys.exit(app.exec())

@@ -7,13 +7,13 @@ Usage:
 import sys
 import platform
 import importlib
-import typing as t
 import pathlib
 import json
+from typing import Any, List, Tuple
 
 import appdirs
 
-from launchii.api import Action, Searcher
+from launchii.api import Action, Item, Searcher, Solution
 import launchii.cli
 import launchii.gui
 
@@ -25,7 +25,33 @@ _default_plugins = [
 ]
 
 
-def load_plugin_file(config_dir: pathlib.Path, default) -> t.List[str]:
+class BasicSolution:
+    def __init__(self, item: Item, action: Action) -> None:
+        self.item = item
+        self.action = action
+
+    def describe(self) -> str:
+        return str(self.item.name)
+
+    def execute(self) -> Any:
+        return self.action.do(self.item)
+
+
+class BasicLaunchii:
+    def __init__(self, seacher: Searcher, action: Action) -> None:
+        self.searcher = seacher
+        self.action = action
+
+    def search(self, search_term: str) -> List[Solution]:
+        return list(
+            map(
+                lambda i: BasicSolution(i, self.action),
+                self.searcher.search(search_term),
+            )
+        )
+
+
+def load_plugin_file(config_dir: pathlib.Path, default) -> List[str]:
     try:
         with open(config_dir / "plugins.json") as f:
             return default
@@ -37,11 +63,11 @@ def load_plugin_file(config_dir: pathlib.Path, default) -> t.List[str]:
 
 
 def instantiate_plugins(
-    system: str, packages: t.List[str]
-) -> t.Tuple[t.List[Searcher], t.List[Action]]:
+    system: str, packages: List[str]
+) -> Tuple[List[Searcher], List[Action]]:
 
-    searchers: t.List[Searcher] = []
-    actions: t.List[Action] = []
+    searchers: List[Searcher] = []
+    actions: List[Action] = []
 
     for package in packages:
         pieces = package.split(":")
@@ -57,11 +83,11 @@ def instantiate_plugins(
     return (searchers, actions)
 
 
-def main(cli, gui, print, args, searcher, runner):
+def main(cli, gui, print, args, launchii):
     if "--cli" in args:
-        cli.main(searcher, runner)
+        cli(launchii).start()
     elif "--gui" in args:
-        gui.main(searcher, runner)
+        gui(launchii).start()
     else:
         print(__doc__)
 
@@ -72,4 +98,6 @@ def run():
 
     (searchers, actions) = instantiate_plugins(platform.system(), plugin_list)
 
-    main(launchii.cli, launchii.gui, print, sys.argv, searchers[0], actions[0])
+    launchiiApp = BasicLaunchii(searchers[0], actions[0])
+
+    main(launchii.cli.Cli, launchii.gui.Gui, print, sys.argv, launchiiApp)

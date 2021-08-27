@@ -23,33 +23,26 @@ def print_function():
 
 
 @pytest.fixture
-def searcher():
+def launchiiApp():
     return mock.Mock()
 
 
-@pytest.fixture
-def runner():
-    return mock.Mock()
-
-
-def test_default_behavior_prints_documentation(
-    cli, gui, print_function, searcher, runner
-):
+def test_default_behavior_prints_documentation(cli, gui, print_function, launchiiApp):
     args = []
-    launchii.main(cli, gui, print_function, args, searcher, runner)
+    launchii.main(cli, gui, print_function, args, launchiiApp)
     print_function.assert_called_once_with(launchii.__doc__)
 
 
-def test_gui_triggered_with_parameter(cli, gui, print_function, searcher, runner):
+def test_gui_triggered_with_parameter(cli, gui, print_function, launchiiApp):
     args = ["--gui"]
-    launchii.main(cli, gui, print_function, args, searcher, runner)
-    gui.main.assert_called_once()
+    launchii.main(cli, gui, print_function, args, launchiiApp)
+    gui.assert_called_once()
 
 
-def test_cli_triggered_with_parameter(cli, gui, print_function, searcher, runner):
+def test_cli_triggered_with_parameter(cli, gui, print_function, launchiiApp):
     args = ["--cli"]
-    launchii.main(cli, gui, print_function, args, searcher, runner)
-    cli.main.assert_called_once()
+    launchii.main(cli, gui, print_function, args, launchiiApp)
+    cli.assert_called_once()
 
 
 @pytest.mark.parametrize(
