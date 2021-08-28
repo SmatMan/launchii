@@ -70,6 +70,14 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
+name = "decorator"
+version = "5.0.9"
+description = "Decorators for Humans"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
 name = "iniconfig"
 version = "1.1.1"
 description = "iniconfig: brain-dead simple config-ini parsing"
@@ -120,6 +128,18 @@ description = "Utility library for gitignore style pattern matching of file path
 category = "dev"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
+
+[[package]]
+name = "pinject"
+version = "0.14.1"
+description = "A pythonic dependency injection library"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+decorator = ">=4.3.0"
+six = ">=1.7.3"
 
 [[package]]
 name = "pluggy"
@@ -206,6 +226,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "six"
+version = "1.16.0"
+description = "Python 2 and 3 compatibility utilities"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
+
+[[package]]
 name = "termcolor"
 version = "1.1.0"
 description = "ANSII Color formatting for output in terminal."
@@ -240,7 +268,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "7a485c1da82069e5cd09bbb8f0719e80a916c856f88624e17f0531312ba571bb"
+content-hash = "fa9ae01b5620c654dd6fd227261b0ab7aa27fcafaaf52d225afb7ee431d6f362"
 
 [metadata.files]
 appdirs = [
@@ -266,6 +294,10 @@ click = [
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
+]
+decorator = [
+    {file = "decorator-5.0.9-py3-none-any.whl", hash = "sha256:6e5c199c16f7a9f0e3a61a4a54b3d27e7dad0dbdde92b944426cb20914376323"},
+    {file = "decorator-5.0.9.tar.gz", hash = "sha256:72ecfba4320a893c53f9706bebb2d55c270c1e51a28789361aa93e4a21319ed5"},
 ]
 iniconfig = [
     {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
@@ -307,6 +339,10 @@ packaging = [
 pathspec = [
     {file = "pathspec-0.9.0-py2.py3-none-any.whl", hash = "sha256:7d15c4ddb0b5c802d161efc417ec1a2558ea2653c2e8ad9c19098201dc1c993a"},
     {file = "pathspec-0.9.0.tar.gz", hash = "sha256:e564499435a2673d586f6b2130bb5b95f04a3ba06f81b8f895b651a3c76aabb1"},
+]
+pinject = [
+    {file = "pinject-0.14.1-py3-none-any.whl", hash = "sha256:dfc4981a36d3f7cf2fa82bd8922f713c769004fe7af935def3e2a52147aeda66"},
+    {file = "pinject-0.14.1.tar.gz", hash = "sha256:0f0a0b14f9df87a85b529a21cdaf530269b1f24fb303d418583a12bb53f69382"},
 ]
 pluggy = [
     {file = "pluggy-0.13.1-py2.py3-none-any.whl", hash = "sha256:966c145cd83c96502c3c3868f50408687b38434af77734af1e9ca461a4081d2d"},
@@ -384,6 +420,10 @@ regex = [
     {file = "regex-2021.8.3-cp39-cp39-win32.whl", hash = "sha256:f35567470ee6dbfb946f069ed5f5615b40edcbb5f1e6e1d3d2b114468d505fc6"},
     {file = "regex-2021.8.3-cp39-cp39-win_amd64.whl", hash = "sha256:bfa6a679410b394600eafd16336b2ce8de43e9b13f7fb9247d84ef5ad2b45e91"},
     {file = "regex-2021.8.3.tar.gz", hash = "sha256:8935937dad2c9b369c3d932b0edbc52a62647c2afb2fafc0c280f14a8bf56a6a"},
+]
+six = [
+    {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
+    {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 termcolor = [
     {file = "termcolor-1.1.0.tar.gz", hash = "sha256:1d6d69ce66211143803fbc56652b41d73b4a400a2891d7bf7a1cdf4c02de613b"},
