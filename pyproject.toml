@@ -16,6 +16,7 @@ python = "^3.9"
 PyQt6 = "^6.1"
 termcolor = "^1.1"
 appdirs = "^1.4.4"
+pinject = "^0.14.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"

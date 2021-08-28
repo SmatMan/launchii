@@ -53,6 +53,12 @@ def test_cli_triggered_with_parameter(cli, gui, print_function, launchiiApp):
     ],
 )
 def test_plugins_load_when_platform(platform, expected_searchers, expected_actions):
+    class MockInstantiator(object):
+        pass
+
+    instantiator = MockInstantiator()
+    instantiator.provide = lambda x: x()
+
     (searchers, actions) = launchii.instantiate_plugins(
         platform,
         [
@@ -61,7 +67,9 @@ def test_plugins_load_when_platform(platform, expected_searchers, expected_actio
             "launchii.openaction:WindowsOpen",
             "launchii.openaction:OSXOpen",
         ],
+        instantiator,
     )
+
     assert isinstance(searchers[0], expected_searchers[0])
     assert isinstance(actions[0], expected_actions[0])
 

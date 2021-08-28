@@ -11,6 +11,7 @@ import pathlib
 import json
 from typing import Any, List, Tuple
 
+import pinject
 import appdirs
 
 from launchii.api import Action, Item, Searcher, Solution
@@ -63,7 +64,9 @@ def load_plugin_file(config_dir: pathlib.Path, default) -> List[str]:
 
 
 def instantiate_plugins(
-    system: str, packages: List[str]
+    system: str,
+    packages: List[str],
+    instantiator,
 ) -> Tuple[List[Searcher], List[Action]]:
 
     searchers: List[Searcher] = []
@@ -74,7 +77,7 @@ def instantiate_plugins(
         actual_module = importlib.import_module(pieces[0])
         class_ = getattr(actual_module, pieces[1])
         if class_.supported_environment(system):
-            instance = class_()
+            instance = instantiator.provide(class_)
             if isinstance(instance, Searcher):
                 searchers.append(instance)
             elif isinstance(instance, Action):
@@ -93,10 +96,24 @@ def main(cli, gui, print, args, launchii):
 
 
 def run():
+    class BaseProviderSpec(pinject.BindingSpec):
+        def provide_app_dirs(self):
+            return appdirs.AppDirs("launchii")
+
+        def provide_user_config_dir(self, app_dirs):
+            return pathlib.Path(app_dirs.user_config_dir)
+
+        def provide_system(self):
+            return platform.system()
+
+    instantiator = pinject.new_object_graph(binding_specs=[BaseProviderSpec()])
+
     dirs = appdirs.AppDirs("launchii")
     plugin_list = load_plugin_file(pathlib.Path(dirs.user_config_dir), _default_plugins)
 
-    (searchers, actions) = instantiate_plugins(platform.system(), plugin_list)
+    (searchers, actions) = instantiate_plugins(
+        platform.system(), plugin_list, instantiator
+    )
 
     launchiiApp = BasicLaunchii(searchers[0], actions[0])
 
