@@ -12,7 +12,7 @@ class FileSearch:
     predicates: List[Callable[[pathlib.Path], bool]] = []
 
     def result_builder(self, file) -> Item:
-        return Item(file.name.lower(), file)
+        return Item(file.name.lower().replace('.lnk', '').title(), file)
 
     def search(self, search_term: str) -> List[Item]:
         return list(
