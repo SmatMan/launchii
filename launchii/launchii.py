@@ -59,7 +59,6 @@ def load_plugin_file(config_dir: pathlib.Path, default) -> List[str]:
 
 
 def instantiate_plugins(
-    system: str,
     packages: List[str],
     instantiator,
 ) -> Tuple[List[Searcher], List[Action]]:
@@ -102,9 +101,7 @@ def run():
     dirs = appdirs.AppDirs("launchii")
     plugin_list = load_plugin_file(pathlib.Path(dirs.user_config_dir), _default_plugins)
 
-    (searchers, actions) = instantiate_plugins(
-        platform.system(), plugin_list, instantiator
-    )
+    (searchers, actions) = instantiate_plugins(plugin_list, instantiator)
 
     launchiiApp = BasicLaunchii(searchers[0], actions[0])
 

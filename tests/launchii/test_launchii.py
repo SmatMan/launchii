@@ -69,7 +69,6 @@ def test_plugins_load_when_platform(platform, expected_searchers, expected_actio
     )
 
     (searchers, actions) = launchii.instantiate_plugins(
-        platform,
         [
             "launchiicontrib.appsearch",
             "launchiicontrib.openaction",
