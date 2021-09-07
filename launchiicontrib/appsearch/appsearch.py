@@ -12,7 +12,7 @@ class FileSearch:
     predicates: List[Callable[[pathlib.Path], bool]] = []
 
     def result_builder(self, file) -> Item:
-        return Item(file.name.lower().replace('.lnk', '').title(), file)
+        return Item(file.name.lower().replace(".lnk", "").title(), file)
 
     def search(self, search_term: str) -> List[Item]:
         return list(
@@ -46,10 +46,6 @@ class StartMenuSearch(FileSearch):
 
     predicates = [lambda path: not path.name.startswith("desktop")]
 
-    @staticmethod
-    def supported_environment(platform: str) -> bool:
-        return platform == "Windows"
-
 
 class OSXApplicationSearch(FileSearch):
 
@@ -63,10 +59,6 @@ class OSXApplicationSearch(FileSearch):
 
     def result_builder(self, file) -> Item:
         return Item(file.stem, file)
-
-    @staticmethod
-    def supported_environment(platform: str) -> bool:
-        return platform == "Darwin"
 
     def getIcon(self, path: pathlib.Path) -> pathlib.Path:
         for i in path.glob(f"Contents/Resources/*.icns"):

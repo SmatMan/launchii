@@ -1,5 +1,4 @@
-from launchii.api import Item
-import launchii.appsearch as app
+import launchiicontrib.appsearch.appsearch as app
 import pathlib
 
 import pytest
@@ -26,24 +25,16 @@ def start_menu_search(tmp_path):
     return searcher
 
 
-def test_active_on_windows():
-    assert True == app.StartMenuSearch.supported_environment("Windows")
-
-
-def test_not_active_elsewhere():
-    assert False == app.StartMenuSearch.supported_environment("Elsewhere")
-
-
 def test_includes_lnk_files(tmp_path, start_menu_search):
     setup_files(tmp_path, ["testing.lnk"])
     result = start_menu_search.search("test")
-    assert_results(["testing.lnk"], result)
+    assert_results(["Testing"], result)
 
 
 def test_excludes_files_beginning_with_desktop(tmp_path, start_menu_search):
     setup_files(tmp_path, ["desktop_file.lnk", "testing.lnk"])
     result = start_menu_search.search("test")
-    assert_results(["testing.lnk"], result)
+    assert_results(["Testing"], result)
 
 
 def test_searches_child_directories(tmp_path, start_menu_search):
@@ -51,7 +42,7 @@ def test_searches_child_directories(tmp_path, start_menu_search):
         tmp_path, ["desktop_file.lnk", "testing.lnk", "child/another-test-file.lnk"]
     )
     result = start_menu_search.search("test")
-    assert_results(["testing.lnk", "another-test-file.lnk"], result)
+    assert_results(["Testing", "Another-Test-File"], result)
 
 
 def test_results_sorted_by_name(tmp_path, start_menu_search):
@@ -60,7 +51,7 @@ def test_results_sorted_by_name(tmp_path, start_menu_search):
     assert True == all(
         map(
             lambda i: i[0].name == i[1],
-            (zip(result, ["filea.lnk", "fileb.lnk", "filec.lnk"])),
+            (zip(result, ["Filea", "Fileb", "Filec"])),
         )
     )
 
@@ -79,9 +70,7 @@ def test_integration_test(tmp_path, start_menu_search):
         ],
     )
     result = start_menu_search.search("test")
-    assert_results(
-        ["testing.lnk", "another-test-file.lnk", "link3.lnk", "file4.lnk"], result
-    )
+    assert_results(["Testing", "Another-Test-File", "Link3", "File4"], result)
 
 
 @pytest.fixture
@@ -89,14 +78,6 @@ def osx_search(tmp_path):
     searcher = app.OSXApplicationSearch()
     searcher.roots = [tmp_path]
     return searcher
-
-
-def test_active_on_darwin():
-    assert True == app.OSXApplicationSearch.supported_environment("Darwin")
-
-
-def test_not_active_not_on_darwin():
-    assert False == app.OSXApplicationSearch.supported_environment("Elsewhere")
 
 
 def test_darwin_applications(tmp_path, osx_search):

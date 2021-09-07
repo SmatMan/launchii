@@ -18,12 +18,7 @@ from launchii.api import Action, Item, Searcher, Solution
 import launchii.cli
 import launchii.gui
 
-_default_plugins = [
-    "launchii.appsearch:StartMenuSearch",
-    "launchii.appsearch:OSXApplicationSearch",
-    "launchii.openaction:WindowsOpen",
-    "launchii.openaction:OSXOpen",
-]
+_default_plugins = ["launchiicontrib.appsearch", "launchiicontrib.openaction"]
 
 
 class BasicSolution:
@@ -73,15 +68,11 @@ def instantiate_plugins(
     actions: List[Action] = []
 
     for package in packages:
-        pieces = package.split(":")
-        actual_module = importlib.import_module(pieces[0])
-        class_ = getattr(actual_module, pieces[1])
-        if class_.supported_environment(system):
-            instance = instantiator.provide(class_)
-            if isinstance(instance, Searcher):
-                searchers.append(instance)
-            elif isinstance(instance, Action):
-                actions.append(instance)
+        actual_module = importlib.import_module(package)
+        index_class = getattr(actual_module, "Index")
+        index = instantiator.provide(index_class)
+        searchers.extend(map(instantiator.provide, index.searchers()))
+        actions.extend(map(instantiator.provide, index.actions()))
 
     return (searchers, actions)
 
