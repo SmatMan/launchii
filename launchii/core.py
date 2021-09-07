@@ -16,7 +16,7 @@ class BasicSolution:
         self.action = action
 
     def describe(self) -> str:
-        return str(self.item.display())
+        return self.action.display() + " " + self.item.display()
 
     def execute(self) -> Any:
         return self.action.do(self.item)
@@ -82,13 +82,20 @@ class PluginLaunchii:
 
     def search(self, search_term: str) -> List[Solution]:
         searchers = self.plugin_manager.get_active_searchers()
-        action = self.plugin_manager.get_active_actions()[0]
+        actions = self.plugin_manager.get_active_actions()
+
+        search_results = list(
+            itertools.chain.from_iterable(
+                map(lambda searcher: searcher.search(search_term), searchers)
+            )
+        )
 
         return list(
             map(
-                lambda item: BasicSolution(item, action),
-                itertools.chain.from_iterable(
-                    map(lambda searcher: searcher.search(search_term), searchers)
+                lambda combo: BasicSolution(*combo),
+                filter(
+                    lambda combo: combo[1].can_do(combo[0]),
+                    itertools.product(search_results, actions),
                 ),
             )
         )
