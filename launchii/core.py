@@ -2,6 +2,7 @@ from typing import Any, List, Tuple
 import pathlib
 import json
 import importlib
+import sys
 
 import pinject
 
@@ -20,9 +21,28 @@ class BasicSolution:
         return self.action.do(self.item)
 
 
-class PluginLaunchii:
-    @staticmethod
-    def _load_plugin_file(config_dir: pathlib.Path, default) -> List[str]:
+class PluginManager:
+    def __init__(self, user_config_dir, bootstrap_provider_spec) -> None:
+        self.user_config_dir = user_config_dir
+        self.boostrap_provider_spec = bootstrap_provider_spec
+
+    def get_active_searchers(self) -> List[Searcher]:
+        plugin_list = self._get_plugin_list_from_config()
+        (searchers, _) = self._instantiate_plugins(plugin_list)
+        return searchers
+
+    def get_active_actions(self) -> List[Action]:
+        plugin_list = self._get_plugin_list_from_config()
+        (_, actions) = self._instantiate_plugins(plugin_list)
+        return actions
+
+    def _get_plugin_list_from_config(self):
+        return self._load_plugin_file(
+            self.user_config_dir,
+            ["launchiicontrib.appsearch", "launchiicontrib.openaction"],
+        )
+
+    def _load_plugin_file(self, config_dir: pathlib.Path, default) -> List[str]:
         try:
             with open(config_dir / "plugins.json") as f:
                 return default
@@ -32,42 +52,40 @@ class PluginLaunchii:
                 json.dump(default, f)
             return default
 
-    @staticmethod
     def _instantiate_plugins(
+        self,
         packages: List[str],
-        instantiator,
     ) -> Tuple[List[Searcher], List[Action]]:
 
         searchers: List[Searcher] = []
         actions: List[Action] = []
 
-        for package in packages:
-            actual_module = importlib.import_module(package)
-            index_class = getattr(actual_module, "Index")
+        modules = list(map(importlib.import_module, packages))
+        instantiator = pinject.new_object_graph(
+            modules=modules + [sys.modules[__name__]],
+            binding_specs=[self.boostrap_provider_spec],
+        )
+
+        for module in modules:
+            index_class = getattr(module, "Index")
             index = instantiator.provide(index_class)
             searchers.extend(map(instantiator.provide, index.searchers()))
             actions.extend(map(instantiator.provide, index.actions()))
 
         return (searchers, actions)
 
-    def __init__(self, user_config_dir, bootstrap_provider_spec) -> None:
-        self.user_config_dir = user_config_dir
 
-        instantiator = pinject.new_object_graph(binding_specs=[bootstrap_provider_spec])
-
-        plugin_list = PluginLaunchii._load_plugin_file(
-            self.user_config_dir,
-            ["launchiicontrib.appsearch", "launchiicontrib.openaction"],
-        )
-
-        (self.searchers, self.actions) = PluginLaunchii._instantiate_plugins(
-            plugin_list, instantiator
-        )
+class PluginLaunchii:
+    def __init__(self, plugin_manager: PluginManager) -> None:
+        self.plugin_manager = plugin_manager
 
     def search(self, search_term: str) -> List[Solution]:
+        searcher = self.plugin_manager.get_active_searchers()[0]
+        action = self.plugin_manager.get_active_actions()[0]
+
         return list(
             map(
-                lambda i: BasicSolution(i, self.actions[0]),
-                self.searchers[0].search(search_term),
+                lambda i: BasicSolution(i, action),
+                searcher.search(search_term),
             )
         )

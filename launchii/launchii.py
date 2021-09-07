@@ -40,7 +40,7 @@ def run():
             return self
 
     instantiator = pinject.new_object_graph(
-        modules=None, binding_specs=[BoostrapProviderSpec()]
+        modules=[launchii.core], binding_specs=[BoostrapProviderSpec()]
     )
 
     launchiiApp = instantiator.provide(PluginLaunchii)
