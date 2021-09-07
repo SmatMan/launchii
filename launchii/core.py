@@ -3,6 +3,7 @@ import pathlib
 import json
 import importlib
 import sys
+import itertools
 
 import pinject
 
@@ -80,12 +81,14 @@ class PluginLaunchii:
         self.plugin_manager = plugin_manager
 
     def search(self, search_term: str) -> List[Solution]:
-        searcher = self.plugin_manager.get_active_searchers()[0]
+        searchers = self.plugin_manager.get_active_searchers()
         action = self.plugin_manager.get_active_actions()[0]
 
         return list(
             map(
-                lambda i: BasicSolution(i, action),
-                searcher.search(search_term),
+                lambda item: BasicSolution(item, action),
+                itertools.chain.from_iterable(
+                    map(lambda searcher: searcher.search(search_term), searchers)
+                ),
             )
         )
