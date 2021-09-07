@@ -12,7 +12,7 @@ def setup_files(root_path, paths):
 
 
 def assert_results(expected, actual):
-    names = list(map(lambda item: item.name, actual))
+    names = list(map(lambda item: item.display(), actual))
     for name in names:
         assert name in expected
     assert len(names) == len(expected)
@@ -28,13 +28,13 @@ def start_menu_search(tmp_path):
 def test_includes_lnk_files(tmp_path, start_menu_search):
     setup_files(tmp_path, ["testing.lnk"])
     result = start_menu_search.search("test")
-    assert_results(["Testing"], result)
+    assert_results(["testing"], result)
 
 
 def test_excludes_files_beginning_with_desktop(tmp_path, start_menu_search):
     setup_files(tmp_path, ["desktop_file.lnk", "testing.lnk"])
     result = start_menu_search.search("test")
-    assert_results(["Testing"], result)
+    assert_results(["testing"], result)
 
 
 def test_searches_child_directories(tmp_path, start_menu_search):
@@ -42,7 +42,7 @@ def test_searches_child_directories(tmp_path, start_menu_search):
         tmp_path, ["desktop_file.lnk", "testing.lnk", "child/another-test-file.lnk"]
     )
     result = start_menu_search.search("test")
-    assert_results(["Testing", "Another-Test-File"], result)
+    assert_results(["testing", "another-test-file"], result)
 
 
 def test_results_sorted_by_name(tmp_path, start_menu_search):
@@ -50,8 +50,8 @@ def test_results_sorted_by_name(tmp_path, start_menu_search):
     result = start_menu_search.search("file")
     assert True == all(
         map(
-            lambda i: i[0].name == i[1],
-            (zip(result, ["Filea", "Fileb", "Filec"])),
+            lambda i: i[0].display() == i[1],
+            (zip(result, ["filea", "fileb", "filec"])),
         )
     )
 
@@ -70,7 +70,7 @@ def test_integration_test(tmp_path, start_menu_search):
         ],
     )
     result = start_menu_search.search("test")
-    assert_results(["Testing", "Another-Test-File", "Link3", "File4"], result)
+    assert_results(["testing", "another-test-file"], result)
 
 
 @pytest.fixture

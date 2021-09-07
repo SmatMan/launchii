@@ -28,23 +28,23 @@ Launchii plugins should always match the major version number of launchii itself
 represents the API documented in this file, and whenever it changes, plugins will need to release new versions
 """
 
-import pathlib
-from typing import Any, List, Protocol, Type, Union
-from dataclasses import dataclass
-
-Location = Union[pathlib.Path, str]
+from typing import Any, List, Protocol, Type
 
 
-@dataclass
-class Item:
-    name: str
-    location: Location
+class SearchResult(Protocol):
+    def display(self) -> str:
+        """Used to display the search result in the user interface"""
+        ...
+
+    def uri(self) -> str:
+        """Used to determine which actions can be applied to this result"""
+        ...
 
 
 class Searcher(Protocol):
     """To be written"""
 
-    def search(self, search_term: str) -> List[Item]:
+    def search(self, search_term: str) -> List[SearchResult]:
         """Have this plugin search for a search term
 
         Returns a list of search results"""
@@ -54,7 +54,7 @@ class Searcher(Protocol):
 class Action(Protocol):
     """To be written"""
 
-    def do(self, result: Item) -> Any:
+    def do(self, result: SearchResult) -> Any:
         """Preliminay interface for actions"""
         ...
 

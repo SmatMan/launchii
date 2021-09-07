@@ -7,16 +7,16 @@ import itertools
 
 import pinject
 
-from launchii.api import Action, Item, Searcher, Solution
+from launchii.api import Action, SearchResult, Searcher, Solution
 
 
 class BasicSolution:
-    def __init__(self, item: Item, action: Action) -> None:
+    def __init__(self, item: SearchResult, action: Action) -> None:
         self.item = item
         self.action = action
 
     def describe(self) -> str:
-        return str(self.item.name)
+        return str(self.item.display())
 
     def execute(self) -> Any:
         return self.action.do(self.item)

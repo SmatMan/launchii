@@ -1,4 +1,4 @@
-from launchii.api import Item, Launchii, Solution
+from launchii.api import Launchii, Solution
 import sys
 from PyQt6 import QtCore, QtWidgets
 import time
