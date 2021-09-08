@@ -1,9 +1,10 @@
 import unittest.mock as mock
+import pinject
 import pytest
 import json
 
-import launchii.appsearch as appsearch
-import launchii.openaction as openaction
+import launchiicontrib.appsearch.appsearch as appsearch
+import launchiicontrib.openaction.openaction as openaction
 import launchii.launchii as launchii
 
 
@@ -53,19 +54,25 @@ def test_cli_triggered_with_parameter(cli, gui, print_function, launchiiApp):
     ],
 )
 def test_plugins_load_when_platform(platform, expected_searchers, expected_actions):
-    class MockInstantiator(object):
-        pass
+    class TestProviderSpec(pinject.BindingSpec):
+        def provide_app_dirs(self):
+            return None
 
-    instantiator = MockInstantiator()
-    instantiator.provide = lambda x: x()
+        def provide_user_config_dir(self, app_dirs):
+            return None
+
+        def provide_system(self):
+            return platform
+
+    instantiator = pinject.new_object_graph(
+        modules=None, binding_specs=[TestProviderSpec()]
+    )
 
     (searchers, actions) = launchii.instantiate_plugins(
         platform,
         [
-            "launchii.appsearch:StartMenuSearch",
-            "launchii.appsearch:OSXApplicationSearch",
-            "launchii.openaction:WindowsOpen",
-            "launchii.openaction:OSXOpen",
+            "launchiicontrib.appsearch",
+            "launchiicontrib.openaction",
         ],
         instantiator,
     )
