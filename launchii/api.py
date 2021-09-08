@@ -54,8 +54,15 @@ class Searcher(Protocol):
 class Action(Protocol):
     """To be written"""
 
+    def can_do(self, result: SearchResult) -> bool:
+        ...
+
     def do(self, result: SearchResult) -> Any:
         """Preliminay interface for actions"""
+        ...
+
+    def display(self) -> str:
+        """Return a verb describing the action"""
         ...
 
 
