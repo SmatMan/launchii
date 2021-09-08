@@ -1,12 +1,23 @@
-from launchii.api import Item
+from launchii.api import SearchResult
 import pytest
 from unittest.mock import Mock
 import pinject
 import json
 
-from launchii.core import BasicSolution, PluginLaunchii, PluginManager
+from launchii.core import PluginLaunchii, PluginManager
 import launchiicontrib.appsearch.appsearch as appsearch
 import launchiicontrib.openaction.openaction as openaction
+
+
+class MockSearchResult:
+    def __init__(self, key) -> None:
+        self._key = key
+
+    def display(self) -> str:
+        return self._key
+
+    def uri(self) -> str:
+        return "mock:" + self._key
 
 
 class FakeProviderSpec(pinject.BindingSpec):
@@ -72,8 +83,8 @@ def test_plugins_create_default_files_if_not_found(tmp_path):
 @pytest.fixture
 def plugin_manager_context():
     (plugin_manager, action, searcher1, searcher2) = Mock(), Mock(), Mock(), Mock()
-    search_result = [Item("test", "loc")]
-    search_result2 = [Item("test2", "loc2")]
+    search_result = [MockSearchResult("test")]
+    search_result2 = [MockSearchResult("test2")]
     plugin_manager.get_active_searchers.return_value = [searcher1, searcher2]
     plugin_manager.get_active_actions.return_value = [action]
     searcher1.search.return_value = search_result
