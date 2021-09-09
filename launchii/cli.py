@@ -27,7 +27,7 @@ class Cli:
                     result = results[option]
                     # ask user if they want to open the app, if yes, open app using os.system("open")
                     shouldOpen = input(
-                        f"Type {yellow('y')} to open {green(result.describe())}, or {yellow('n')} to quit: "
+                        f"Type {yellow('y')} to {green(result.describe())}, or {yellow('n')} to quit: "
                     )
 
                     if shouldOpen == "y":
