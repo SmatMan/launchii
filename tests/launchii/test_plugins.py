@@ -35,10 +35,7 @@ def test_plugins_load_when_platform(system, expected_searchers, expected_actions
     (searchers, actions) = PluginManager(
         None, FakeProviderSpec(system)
     )._instantiate_plugins(
-        [
-            "launchiicontrib.appsearch",
-            "launchiicontrib.openaction",
-        ],
+        frozenset(["launchiicontrib.appsearch", "launchiicontrib.openaction"])
     )
 
     assert isinstance(searchers[0], expected_searchers[0])

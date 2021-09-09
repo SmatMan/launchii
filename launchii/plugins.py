@@ -1,7 +1,8 @@
-from typing import Any, List, Set, Tuple, Type
+from typing import Any, FrozenSet, List, Tuple, Type
 import json
 import importlib
 import sys
+import functools
 
 import pinject
 
@@ -100,7 +101,7 @@ class PluginManager:
 
         self.user_config_dir = user_config_dir
         self._specs = [bootstrap_provider_spec, SelfBindingSpec()]
-        self.active_plugins: Set[str] = set()
+        self.active_plugins: FrozenSet[str] = frozenset()
 
     def get_active_searchers(self) -> List[Searcher]:
         plugin_list = self._read_plugin_file()
@@ -113,11 +114,11 @@ class PluginManager:
         return actions
 
     def deactivate_plugin(self, plugin_string):
-        self.active_plugins.remove(plugin_string)
+        self.active_plugins = frozenset(self.active_plugins - {plugin_string})
         self._write_plugin_file()
 
-    def activate_plugin(self, plugin_string) -> Set[str]:
-        self.active_plugins.add(plugin_string)
+    def activate_plugin(self, plugin_string) -> FrozenSet[str]:
+        self.active_plugins = frozenset(self.active_plugins | {plugin_string})
         self._write_plugin_file()
         return self.active_plugins
 
@@ -127,13 +128,15 @@ class PluginManager:
     def get_inactive_plugins(self):
         return self.all_plugins - self.active_plugins
 
-    def _read_plugin_file(self) -> Set[str]:
+    def _read_plugin_file(self) -> FrozenSet[str]:
         try:
             with open(self.user_config_dir / "plugins.json") as f:
                 from_file = set(json.load(f))
-                self.active_plugins = from_file & self.all_plugins | self.always_plugins
+                self.active_plugins = frozenset(
+                    from_file & self.all_plugins | self.always_plugins
+                )
         except FileNotFoundError as err:
-            self.active_plugins = self.default_plugins
+            self.active_plugins = frozenset(self.default_plugins)
             self._write_plugin_file()
         return self.active_plugins
 
@@ -142,9 +145,10 @@ class PluginManager:
         with open(self.user_config_dir / "plugins.json", "w") as f:
             json.dump(list(self.active_plugins), f)
 
+    @functools.lru_cache(maxsize=1)
     def _instantiate_plugins(
         self,
-        packages: Set[str],
+        packages: FrozenSet[str],
     ) -> Tuple[List[Searcher], List[Action]]:
 
         searchers: List[Searcher] = []
